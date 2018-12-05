@@ -2,6 +2,8 @@
 
 # django-slack-forms
 
+![Flowchart](/docs/media/forms.jpg)
+
 ### Quickstart
 
 1. Install the app.
@@ -21,8 +23,9 @@
   #########################
   # slackforms settings
 
-  SLACKFORMS_SLACK_VERIFICATION_TOKEN = ""  # From Slack API Dashboard
-  SLACKFORMS_SLACK_API_TOKEN = ""  # From Slack API Dashboard
+  SLACKFORMS_SLACK_VERIFICATION_TOKEN = ""  # See Setting Up Your Slack App
+  SLACKFORMS_SLACK_API_TOKEN = ""  # See Setting Up Your Slack App
+  SLACKFORMS_SLACK_BOT_TOKEN = "" # See Setting Up Your Slack App
   SLACKFORMS_ROOT_URL = ""  # Root URL of where this app will be installed
   ```
 
@@ -34,9 +37,9 @@ To make a new form, go to your Django admin and make a new `Form` under `Slackfo
 
 - `Name`: A unique name for your form. This will be used to tell Slack which form you want to open. See [Setting Up Your Slack App: Step #3](/#setting-up-your-slack-app).
 - `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](/#setting-up-your-slack-app).
-- `Webhook`: See [Data Source and Webhook](/#data-source-and-webhook).
 - `Json schema`: See [JSON Schema](/#json-schema).
 - `Ui schema`: See [UI Schema](/#ui-schema).
+- `Webhook`: See [Data Source and Webhook](/#data-source-and-webhook).
 - `Data source:`: See [Data Source and Webhook](/#data-source-and-webhook).
 
 #### JSON Schema
@@ -45,7 +48,7 @@ This input is for mapping out what your data looks like. All official JSON Schem
 - `enumNames`: An array of display names for the values provided in the object's `enum` property. See [here](https://github.com/mozilla-services/react-jsonschema-form#custom-labels-for-enum-fields) for more.
 - `source`: An alternative way of providing acceptable values. It should be a valid URL which serves an array of JSON objects with at least `value` and `label` fields. You can also provide one of the following values to use Slack's dynamic content (`users`, `channels`, `conversations`). See [here](https://api.slack.com/dialogs#dynamic_select_elements) for more on dynamic options.
 
-Here's an example of a JSON Schema:
+See an example [here](/EXAMPLES.md#json-schema).
 
 #### UI Schema
 This app takes inspiration from `react-jsonschema-form` but instead of rendering components, it renders an object that can be interpreted by Slack. For those familiar with Slack's form schema, I've provided the corresponding Slack property each of these is mapped to.
@@ -58,7 +61,7 @@ This app takes inspiration from `react-jsonschema-form` but instead of rendering
 | `ui:help`       | Help text to display   | No        | `"A number"`| `hint`                   |
 | `ui:order`      | The place of the input | No        | `1`         | None                     |
 
-Here's an example UI Schema:
+See an example [here](/EXAMPLES.md#ui-schema).
 
 
 #### Data Source And Webhook
@@ -73,20 +76,23 @@ Once you have data in your form, you can send the processed and validated form d
 | Menus           | The  `value` of the option | `{"text": "My Option", "value": "[ARGUMENT]"}`                  |
 | Actions         | The text of the message    | `[ARGUMENT]`                                                    |
 
+###### Example
 Let's take a look at an example.
 
 You're making a new user form which adds/updates a `User` to your database. Your API is a standard one which looks and acts like this:
 ```
-https://example.com/api/user/UNIQUE_ID/ <-- GET requests return the data of the entry with that UNIQUE_ID
-https://example.com/api/user/ <-- POST requests create a new entry (request data has no ID)
-https://example.com/api/user/ <-- PUT requests update an entry (request data has ID)
+https://example.com/api/user/UNIQUE_ID/ <-- GET requests return the data of the record with that UNIQUE_ID
+https://example.com/api/user/ <-- POST requests create a new record (request data has no ID)
+https://example.com/api/user/ <-- PUT requests update a record (request data has ID)
 ```
 
 To properly set up your form to use this setup you'd use the following values:
 - Data Source: `https://example.com/api/user/{id}/`
 - Webhook: `https://example.com/api/user/`
 
-This app will fill the `{id}` in `https://example.com/api/user/{id}/` with the argument retrieved from the trigger and send a GET request to get starting data for the form. Once processed, forms triggered without an ID will send POST requests to `https://example.com/api/user/` while forms triggered WITH an ID will send PUT requests to `https://example.com/api/user/` with the ID in it's `slackforms_meta_data` (see [Example Payloads](/#example-payloads) to see what that looks like).
+This app will fill the `{id}` in `https://example.com/api/user/{id}/` with the argument retrieved from the trigger and send a GET request to get starting data for the form.
+
+Once processed, forms triggered without an ID will send POST requests to `https://example.com/api/user/` while forms triggered WITH an ID will send PUT requests to `https://example.com/api/user/` with the ID in it's `slackforms_meta_data` (see [this](/EXAMPLES.md#form-data-webhook) for an example of what that payload looks like).
 
 
 ### Setting Up Your Slack App
@@ -94,11 +100,17 @@ This app will fill the `{id}` in `https://example.com/api/user/{id}/` with the a
 
 2. Under `Interactive Components`, paste the `SLACKFORMS_ROOT_URL` from your settings in `Request URL`.
 
-3. If you want to use message actions to call new forms, click `Create New Action`. Give it a name and description, and paste the `name` of your form (the one you made in the Django admin) in `Callback ID`.
+3. Under `Bot Users`, click `Add a Bot User`. Give it a name and username.
 
-4. If you want to call forms from slash commands go to `Slash Commands`. Name the command whatever you set the `Slash command` attribute to for your form in the Django admin. Set the `Request URL` to the `SLACKFORMS_ROOT_URL` from your settings.
+4. If you want to use message actions to call new forms, click `Create New Action`. Give it a name and description, and paste the `Name` of your form (the one you made in the Django admin) in `Callback ID`.
 
-5. Re-install the app by going to `Outh & Permissions` and clicking `Reinstall App`.
+5. If you want to call forms from slash commands go to `Slash Commands`. Name the command whatever you set the `Slash command` attribute to for your form in the Django admin. Set the `Request URL` to the `SLACKFORMS_ROOT_URL` from your settings.
+
+6. Re-install the app by going to `Outh & Permissions` and clicking `Reinstall App`.
+
+7. You'll find the `SLACKFORMS_SLACK_API_TOKEN` and `SLACKFORMS_SLACK_BOT_TOKEN` you'll need for the settings in `OAuth & Permissions` under `OAuth Access Token` and `Bot User OAuth Access Token` respectively.
+
+8. You'll find the `SLACKFORMS_SLACK_VERIFICATION_TOKEN` in `Basic Information` under `Verification Token`.
 
 ### How To Trigger A Form
 
@@ -121,10 +133,54 @@ The first way to manually trigger a form is to send a POST request to the `SLACK
 | `data`       | A dictionary with overriding data values.                        | No       |
 | `data_id`    | The Id of the data to be retrieved form the form's `data_source`.| No       |
 
-If this app is installed in the app you're trying to trigger the form from, you can also trigger the form from within your Python code using the model's `post_to_slack` function and passing the `trigger_id` as the first argument as well as optionally passing the `data` and `data_id` named arguments to the function.
+See [this](/EXAMPLES.md#manual-form-triggers) for an example of what that payload should look like.
+
+If this app is installed in the app you're trying to trigger the form from, you can also trigger the form from within your Python code using the model's `post_to_slack` function and passing the `trigger_id` as the first argument as well as optionally passing the `data` and `data_id` named arguments to the function like so:
+
+```python
+form = Form.objects.get(name="NAME OF FORM")
+form.post_to_slack("TRIGGER_ID", data_id="12345", data={"prop": "value"})
+```
 
 In both cases if both `data` and `data_id` are provided the two data sources will be merged. Data properties provided explicitly through the `data` argument will override source data retrieved from the `data_source` endpoint designated with `data_id` if they exist in both.
 
+### How To Respond With Feedback
+Once your webhook receives data and processes it accordingly, you may want to post a message in Slack to confirm it's success or indicate it's failure. That's what the `response_url` is for.
+
+In the meta data for the request payload sent to your webhook is a URL that can be sent a POST request to in order to post a message. The meta data also comes with information about the channel the form was filled out in, as well as the user who filled it out. This can be useful for creating a proper feedback message.
+
+To post the message, send a POST request to the callback URL with the `token` property set to the same value as `SLACKFORMS_SLACK_VERIFICATION_TOKEN`. It should also have a `payload` property which must be a serialized dictionary with the values you'd normally pass to a slack `chat.postMessage` request. You can see those properties [here](https://api.slack.com/methods/chat.postMessage) and use [this tool](https://api.slack.com/docs/messages/builder) to help you craft rich text messages with attachments.
+
+Remember that the Slack app posting the message is actually Slack Forms. But you can use this to your advantage to allow for editing after a new record has been added.
+
+###### Example
+Let's take a look at an example.
+
+Just like before your `https://example.com/api/user/` endpoint takes POST requests that adds a new record. The endpoint can then respond with the following confirmation message:
+
+```javascript
+{
+  "channel": "[CHANNEL_ID]",
+  "text": "[USER] created a new [MODEL].",
+  "attachments": [
+      {
+          "fallback": "Edit N/A",
+          "callback_id": "[FORM_NAME]",
+          "actions": [
+              {
+                "name": "[NEW_RECORD_ID]",
+                "text": "Edit",
+                "type": "button"
+              }
+          ],
+      }
+  ]
+}
+```
+
+Since Slack Forms is the one making the message, simply by including the right `callback_id` and `name` you can easily make an edit button which calls the same form, but this time with some data pre-filled and with an internal state that will tell Slack Form to send a PUT request next time.
+
+This example isn't the whole payload. For a complete take on what that should look see [this example](/EXAMPLES.md#callbacks-to-create-messages).
 
 ### Developing
 

@@ -90,29 +90,129 @@ Various payloads that this app will ingest for the purposes of creating and hand
 
 ### Sources for Properties
 This app's JSON Schema properties can have a `source` property of their own which points to an endpoint. This is an example of one of those endpoints.
+
 ```javascript
 [
   {
-    "label": "One",
-    "value": 1
+    "label": "News Apps Editor",
+    "value": "apps-editor"
   },
   {
-    "label": "Two",
-    "value": 2
+    "label": "Senior News Apps Developer",
+    "value": "apps-dev-senior"
   },
   {
-    "label": "Three",
-    "value": 3
+    "label": "News Apps Developer",
+    "value": "apps-dev"
   },
   {
-    "label": "Four",
-    "value": 4
+    "label": "Graphics Editor",
+    "value": "graphics-editor"
   },
   {
-    "label": "Five",
-    "value": 5
+    "label": "Graphics Reporter",
+    "value": "graphics-reporter"
   }
 ]
 ```
 
-### 
+### Manual Form Triggers
+Forms can be triggered manually by hitting the root of the app with a proper payload.
+
+```javascript
+{
+  "payload": {
+    "type": "manual",
+    "form": "Test",
+    "token": "S3C639pZqXvR2toPwcng",
+    "trigger_id": "32fneo2043",  // sent to your App from Slack via a user action
+    "data_id": "321231",  // optional
+    "data": {  // optional
+      "name": "Andrew Briz Override"
+    },
+  }
+}
+```
+
+In order to properly parse the request, the `payload` dictionary should be stringified (such as with `json.dumps()`) so that the request data actually looks like this in the end:
+
+```javascript
+{
+  "payload": "{\"type\":\"manual\",\"form\":\"Test\",\"token\":\"S3C639pZqXvR2toPwcng\",\"trigger_id\":\"32fneo2043\",\"data_id\":\"321231\",\"data\":{\"name\":\"Andrew Briz Override\"}}"
+}
+```
+
+
+### Callbacks To Create Messages
+Once a message has been processed, callbacks can be sent to a the `/callback/` endpoint to post messages in a given channel as the Slack Forms bot.
+
+```javascript
+{
+  "token": "S3C639pZqXvR2toPwcng",
+  "payload": {
+    "channel": "C8LAQNJ",
+    "message": {
+      "text": "Success!"
+    }
+  }
+}
+```
+
+In order to properly parse the request, the `payload` dictionary should be stringified (such as with `json.dumps()`) so that the request data actually looks like this in the end:
+
+```javascript
+{
+  "token": "S3C639pZqXvR2toPwcng",
+  "payload": "{\"channel\": \"C8LAQNJ\",\"message\": {\"text\": \"Success!\"}"
+}
+```
+
+The data in `payload` can be any of the arguments of the [`postMessage`](https://api.slack.com/methods/chat.postMessage) Slack API method (except `token` which is handled by Slack Forms).
+
+## Payloads Sent By Slack Forms
+
+This app also produces payloads of it's own which it sends to various webhooks you might be developing.
+
+### Form Data Webhook
+
+After a form is submitted, validated, and processed the form data will be sent to the configured webhook (as configured in the Django admin).
+
+```javascript
+{
+  "slackforms_meta_data": { // this dictionary will be a serialized string
+    "data_id": "321231", // The ID of the model being updated or null in POST requests
+    "team": { // the team the form was finished in
+      "id": "TEMGAT2Z",
+      "domain": "your-team"
+    },
+    "channel": { // the channel the form was finished in
+      "id": "C8LAQNJ",
+      "name": "general"
+    },
+    "user": { // the user who finished the form
+      "id": "UELJYGUAJ",
+      "name": "briz.andrew"
+    },
+    "response_url": "https://example.com/forms/callback/",
+    "form_name": "Test" // the unique name of the form that was filled out
+  },
+  "name": "Andrew Briz",
+  "title": "apps-dev",
+  "age": "22",
+  "biography": "He's a developer on POLITICO's Interactives Team.",
+  "permissions": "admin"
+}
+```
+
+In order to allow for `slackforms_meta_data` to be a multi-layer dictionary, it will need to be  de-stringified (such as with `json.loads()`). In reality the request data will look like this:
+
+```javascript
+{
+  "slackforms_meta_data": "{\"data_id\":\"321231\",\"team\":{\"id\":\"TEMGAT2Z\",\"domain\":\"your-team\"},\"channel\":{\"id\":\"C8LAQNJ\",\"name\":\"general\"},\"user\":{\"id\":\"UELJYGUAJ\",\"name\":\"briz.andrew\"},\"response_url\":\"https://example.com/forms/callback/\",\"form_name\":\"Test\"}",
+  "name": "Andrew Briz",
+  "title": "apps-dev",
+  "age": "22",
+  "biography": "He's a developer on POLITICO's Interactives Team.",
+  "permissions": "admin"
+}
+```

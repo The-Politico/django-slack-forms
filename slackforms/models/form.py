@@ -126,7 +126,7 @@ this template. Use "{id}" to crate the template.
         meta_data["form_name"] = self.name
         data["slackform_meta_data"] = json.dumps(meta_data)
         if not self.webhook == "":
-            if meta["data_id"] == "":
+            if meta["data_id"] is None:
                 requests.post(url=self.webhook, data=data)
             else:
                 requests.put(url=self.webhook, data=data)
