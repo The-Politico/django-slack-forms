@@ -10,10 +10,13 @@ python_version = "3.6"
 pytest = "*"
 "flake8" = "*"
 django = ">=2.0"
-djangorestframework = "*"
 "dj-database-url" = "*"
 "psycopg2" = "*"
 "slackforms" = {path = "./..", editable = true}
 "ed0a5ba" = {path = "./..", editable = true}
+jsonschema = "*"
+requests = "*"
+dateparser = "*"
+slackclient = "*"
 
 [dev-packages]

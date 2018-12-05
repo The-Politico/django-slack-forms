@@ -1,0 +1,83 @@
+[
+  {
+    "model": "slackforms.form",
+    "pk": 1,
+    "fields": {
+      "name": "Test",
+      "webhook": "http://127.0.0.1:8000/test/",
+      "json_schema": {
+        "type": "object",
+        "title": "Name of Your Form",
+        "required": [
+          "name",
+          "title"
+        ],
+        "properties": {
+          "age": {
+            "type": "number",
+            "title": "Age",
+            "minimum": 21
+          },
+          "date": {
+            "type": "string",
+            "title": "Date",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "title": "Job Title",
+            "source": "http://127.0.0.1:8000/test-options/"
+          },
+          "permissions": {
+            "enum": [
+              "admin",
+              "edit",
+              "user"
+            ],
+            "type": "string",
+            "title": "Permissions",
+            "enumNames": [
+              "Administrator",
+              "Editor",
+              "User"
+            ]
+          }
+        }
+      },
+      "ui_schema": {
+        "age": {
+          "ui:order": 3,
+          "ui:value": 21,
+          "ui:widget": "number"
+        },
+        "name": {
+          "ui:order": 1,
+          "ui:widget": "text",
+          "ui:placeholder": "Johny Appleseed"
+        },
+        "title": {
+          "ui:order": 2,
+          "ui:widget": "select"
+        },
+        "submit": {
+          "ui:value": "Save"
+        },
+        "biography": {
+          "ui:help": "300 character limit",
+          "ui:order": 4,
+          "ui:widget": "textarea"
+        },
+        "permissions": {
+          "ui:order": 5,
+          "ui:widget": "select"
+        }
+      },
+      "data_source": "http://127.0.0.1:8000/test-data/?id={id}",
+      "slash_command": "form-test"
+    }
+  }
+]
