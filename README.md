@@ -10,7 +10,7 @@ Django Slack Forms is here to solve these and more hurtles by using a popular [J
 
 At its most basic level, the app works like the chart below with you, the developer, being responsible for the third column (labeled `External`). Due to it's flexibility, this app is not plug-and-play, but hopefully this guide will help you install it into your current infrastructure in no time.
 
-![Flowchart](/docs/media/forms4.jpg)
+![Flowchart](/docs/media/forms5.jpg)
 
 ### Table of Contents
 1. [Quickstart](#quickstart)
