@@ -2,7 +2,15 @@
 
 # django-slack-forms
 
-![Flowchart](/docs/media/forms.jpg)
+[Slack Dialogs](https://api.slack.com/dialogs) (forms) are a great and easy way to get data from members of your Slack team. They can be called in a number of ways, they're designed to work on desktop and mobile, and they're already on a familiar platform.
+
+Unfortunately making and sending forms to your users can require an elaborate knowledge of the often-arcane Slack API. Furthermore, validation beyond required fields and character limit has to be handled programmatically by your server which more often than not means you just don't do it.
+
+Django Slack Forms is here to solve these and more hurtles by using a popular [JSON Schema](https://json-schema.org/understanding-json-schema/index.html) to shape and validate your data. New forms can be created in a Django admin with a number of ways to connect it to outside data and webhooks. The app is designed to be as flexible as possible to accommodate your individual data needs and data structures.
+
+At it's most basic level, the app works like the chart below with you, the developer, being responsible for the third column (labeled `External`). Due to it's flexibility, this app is not plug-and-play, but hopefully this guide will help you install it into your current infrastructure in no time.
+
+![Flowchart](/docs/media/forms3.jpg)
 
 ### Quickstart
 
@@ -182,16 +190,35 @@ Since Slack Forms is the one making the message, simply by including the right `
 
 This example isn't the whole payload. For a complete take on what that should look see [this example](/EXAMPLES.md#callbacks-to-create-messages).
 
+### A Complete Example
+
+For a complete example of what you're responsible for developing outside this app look at the [`exampleapp`](/example/exampleapp) directory. A form configuration exists in [`fixtures.json`](/example/exampleapp/fixtures.json) which can be loaded into your database as an example.
+
+In its views you'll see an [`API`](/example/exampleapp/views/api.py) view which serves as the form's webhook and data source (providing data via GET, creating entries via POST, and updating those entries via PUT).
+
+You'll also see that the `API` sends a POST request to the `response_url` provided with a feedback message meant to be sent to a pre-designated feedback channel (see [Line 12](/example/exampleapp/views/api.py#L11)).
+
+You can also find examples of an endpoint with options for a select field in the [`TestOptions`](/example/exampleapp/views/test_options.py) view and of a manual form trigger via POST request in the [`TestManual`](/example/exampleapp/views/test_manual.py) view.
+
 ### Developing
 
 ##### Running a development server
 
-Move into example directory and run the development server with pipenv.
+1. Move into example directory and run the development server with pipenv.
 
   ```
   $ cd example
   $ pipenv run python manage.py runserver
   ```
+
+2. In a separate terminal, start an ngrok tunnel. (If you're using the free version of ngrok don't include the `subdomain` argument.)
+  ```
+  $ ngrok http [YOUR_PORT_NUMBER] --subdomain=[YOUR_NGROK_SUBDOMAIN]
+  ```
+
+3. If there isn't one already, set up an app on Slack (See [Setting Up Your Slack App](/setting-up-your-slack-app)). Set the interactive `request_url` and slash command URLs to your ngrok HTTPS tunnel URL displayed in your terminal. It should be `https://[YOUR_NGROK_SUBDOMAIN].ngrok.io`.
+
+4. If you want to develop the manual form trigger make a new slash command and set the URL to `https://[YOUR_NGROK_SUBDOMAIN].ngrok.io/test-manual/`.
 
 ##### Setting up a PostgreSQL database
 
@@ -213,3 +240,15 @@ Move into example directory and run the development server with pipenv.
   $ cd example
   $ pipenv run python manage.py migrate
   ```
+4. Load the fixture form into your database (optional).
+  ```
+  $ pipenv run python manage.py loaddata exampleapp/fixtures.json
+  ```
+
+##### Routes Available In Development App
+- `/`: The root of Slack Forms. Used as the URL provided to Slack as the `request_url` and the URL for every slash command.
+- `/callback/`: The callback route for Slack Forms. Used as a `response_url` for POST requests sent to webhooks in order to provide feedback.
+- `/admin/`: The Django admin.
+- `/api/test/`: A test API endpoint for GET, POST, and PUT requests used in the example form found in the `fixtures.json`.
+- `/api/options/`: A test set of options for a field used in the example form found in the `fixtures.json`.
+- `/test-manual/`: A test endpoint that triggers a manual form trigger if connected to a slash command.

@@ -13,7 +13,10 @@ from ..handlers import (
     ManualHandler,
 )
 
-handlers = {
+"""
+Mapping reequest types to valid handler functions.
+"""
+HANDLERS = {
     "dialog_submission": FormHandler().handle,
     "interactive_message": MessageHandler().handle,
     "message_action": ActionHandler().handle,
@@ -23,10 +26,21 @@ handlers = {
 
 
 class Home(View):
+    """
+    Endpoint to receive all interactions from Slack (i.e. slash commands,
+    dialog submissions, interactive messages, message actions, and even manual
+    requests sent from other servers).
+    """
     def get(self, request):
+        """
+        Server status.
+        """
         return HttpResponse("OK", status=200)
 
     def post(self, request, format=None):
+        """
+        Validate request token and pass data to the appropriate handler.
+        """
         if "payload" in request.POST:
             data = json.loads(request.POST.get("payload"))
         else:
@@ -39,12 +53,12 @@ class Home(View):
         if type == "" and "command" in data:
             type = "slash_command"
 
-        if type not in handlers:
+        if type not in HANDLERS:
             return HttpResponse(
                 "No handler for {} request".format(type), status=400
             )
 
-        handler = handlers.get(type)
+        handler = HANDLERS.get(type)
         return handler(data)
 
     @csrf_exempt

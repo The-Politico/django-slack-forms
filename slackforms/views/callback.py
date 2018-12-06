@@ -1,12 +1,17 @@
 import json
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from ..conf import settings
 from ..utils import slack
 
 
 class Callback(View):
+    """
+    Endpoint that posts messages in Slack channels. Designed to provide
+    in-channel feedback after a successful form process. Returns the response
+    data received from Slack.
+    """
     def get(self, request):
         return HttpResponse("OK", status=200)
 
@@ -18,7 +23,7 @@ class Callback(View):
 
         message_data = json.loads(data.get("payload", ""))
         resp = slack("chat.postMessage", **message_data)
-        return HttpResponse(json.dumps(resp), status=200)
+        return JsonResponse(resp, status=200)
 
     @csrf_exempt
     def dispatch(self, *args, **kwargs):

@@ -4,6 +4,10 @@ from slackforms.models import Form
 
 
 class FormHandler:
+    """
+    Handler for dialog submissions. Validates data based on the callback_id
+    and returns errors. If no errors, it calls the form's webhook.
+    """
     def handle(self, data):
         try:
             form = Form.objects.get(name=data.get("callback_id"))

@@ -4,6 +4,11 @@ from slackforms.models import Form
 
 
 class ManualHandler:
+    """
+    Handler for manual form triggers. Finds the right form from the form
+    property in the request data and triggers the appropriate form using the
+    trigger_id in the request data.
+    """
     def handle(self, data):
         try:
             form = Form.objects.get(name=data.get("form"))

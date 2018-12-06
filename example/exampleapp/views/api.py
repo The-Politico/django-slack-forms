@@ -7,14 +7,14 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.conf import settings
 
-fields = ["name", "age", "title", "date", "permissions"]
-
-data = {}  # Fake external database
+FIELDS = ["name", "age", "title", "date", "permissions"]
+DATABASE = {}  # Fake external database
+CHANNEL = "CEK26NZM2"
 
 
 class API(View):
     def get(self, request):
-        resp = data.get(request.GET.get("id", ""), {})
+        resp = DATABASE.get(request.GET.get("id", ""), {})
         return JsonResponse(resp)
 
     def put(self, request):
@@ -27,13 +27,13 @@ class API(View):
         form_name = meta["form_name"]
 
         # handle the API logic
-        if data_id in data:
-            for field in fields:
+        if data_id in DATABASE:
+            for field in FIELDS:
                 if field in request_data:
-                    data[data_id][field] = request_data[field]
+                    DATABASE[data_id][field] = request_data[field]
 
         # create feedback message
-        message = {"channel": "CEK26NZM2"}
+        message = {"channel": CHANNEL}
         message["text"] = "`{}` edited `{}` entry: `{}`.".format(
             username, form_name, data_id
         )
@@ -47,7 +47,6 @@ class API(View):
 
     def post(self, request):
         # process the request data
-        print(request.POST)
         meta = json.loads(request.POST.get("slackform_meta_data"))
         response_url = meta["response_url"]
         username = meta["user"]["name"]
@@ -55,12 +54,12 @@ class API(View):
 
         # handle the API logic
         data_id = "%032x" % random.getrandbits(128)
-        data[data_id] = {}
-        for field in fields:
-            data[data_id][field] = request.POST.get(field, "")
+        DATABASE[data_id] = {}
+        for field in FIELDS:
+            DATABASE[data_id][field] = request.POST.get(field, "")
 
         # create feedback message
-        message = {"channel": "CEK26NZM2"}
+        message = {"channel": CHANNEL}
         message["text"] = "`{}` created a new `{}` entry: {}.".format(
             username, form_name, data_id
         )

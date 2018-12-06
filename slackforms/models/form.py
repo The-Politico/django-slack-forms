@@ -32,11 +32,8 @@ class Form(models.Model):
     ui_schema = JSONField(
         null=True, help_text="A schema for the form inputs. See docs."
     )
-    data_source = models.CharField(
-        max_length=40,
-        unique=True,
+    data_source = models.URLField(
         blank=True,
-        null=True,
         help_text="""
 The source of data if an Id is supplied. Variable is passed through to
 this template. Use "{id}" to crate the template.
@@ -55,17 +52,29 @@ this template. Use "{id}" to crate the template.
         return self.name
 
     def get_resonse_url(self):
+        """
+        Get the proper response_url callback for webhook request data.
+        """
         return os.path.join(Settings.ROOT_URL, "callback/")
 
     def get_prop_attr(self, prop, attr):
+        """
+        Get a particular attribute of a particular form property.
+        """
         return (
             self.json_schema.get("properties", {}).get(prop, {}).get(attr, "")
         )
 
     def is_prop_number(self, prop):
+        """
+        Get whether a property is of a number type.
+        """
         return self.get_prop_attr(prop, "type") in ["number", "integer"]
 
     def get_form_data(self, id):
+        """
+        Get starting data from the form's data_source given a particular id.
+        """
         if self.data_source or id == "":
             url = self.data_source.format(id=id)
             r = requests.get(url=url)
@@ -74,6 +83,9 @@ this template. Use "{id}" to crate the template.
             return {}
 
     def process(self, content):
+        """
+        Process data from a Slack form.
+        """
         output = {}
         for prop, value in content.items():
             if value is not None:
@@ -93,6 +105,10 @@ this template. Use "{id}" to crate the template.
         return output
 
     def validate(self, content):
+        """
+        Validate form data based on a form's json schema and return errors
+        in a Slack-friendly structure.
+        """
         try:
             validate(content, self.json_schema)
         except exceptions.ValidationError as e:
@@ -105,6 +121,9 @@ this template. Use "{id}" to crate the template.
         return True
 
     def create_slack_form(self, data, data_id):
+        """
+        Create a Slack form dictionary from the record's json and ui schemas.
+        """
         form = schema_to_form(
             self.name, self.json_schema, self.ui_schema, data
         )
@@ -114,12 +133,20 @@ this template. Use "{id}" to crate the template.
         return form
 
     def post_to_slack(self, trigger_id, data_id="", data={}):
+        """
+        Given starting data and/or an Id to get data from a data_source,
+        trigger a new form to open in Slack.
+        """
         source_data = self.get_form_data(data_id)
         form_data = {**source_data, **data}  # noqa: E999
         form = self.create_slack_form(form_data, data_id=data_id)
         slack("dialog.open", dialog=form, trigger_id=trigger_id)
 
     def post_to_webhook(self, processed_content, meta={}):
+        """
+        Send processed form data (along with some metadata) to the form's
+        designated webhook.
+        """
         data = processed_content
         meta_data = meta
         meta_data["response_url"] = self.get_resonse_url()
