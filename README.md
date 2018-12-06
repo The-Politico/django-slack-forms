@@ -43,8 +43,8 @@ Django Slack Forms uses a JSON and UI schema combination derived from the [JSONS
 
 To make a new form, go to your Django admin and make a new `Form` under `Slackforms`. You'll need to fill out the following properties:
 
-- `Name`: A unique name for your form. This will be used to tell Slack which form you want to open. See [Setting Up Your Slack App: Step #3](./#setting-up-your-slack-app).
-- `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](./#setting-up-your-slack-app).
+- `Name`: A unique name for your form. This will be used to tell Slack which form you want to open. See [Setting Up Your Slack App: Step #3](#setting-up-your-slack-app).
+- `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](#setting-up-your-slack-app).
 - `Json schema`: See [JSON Schema](/#json-schema).
 - `Ui schema`: See [UI Schema](/#ui-schema).
 - `Webhook`: See [Data Source and Webhook](/#data-source-and-webhook).
