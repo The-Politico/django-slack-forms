@@ -15,17 +15,17 @@ At its most basic level, the app works like the chart below with you, the develo
 ### Table of Contents
 1. [Quickstart](#quickstart)
 2. [Making Forms](#making-forms)
-  - [JSON Schema](#json-schema)
-  - [UI Schema](#ui-schema)
-  - [Data Source And Webhook](#data-source-and-webhook)
+  * [JSON Schema](#json-schema)
+  * [UI Schema](#ui-schema)
+  * [Data Source And Webhook](#data-source-and-webhook)
 3. [Setting Up Your Slack App](#setting-up-your-slack-app)
 4. [How To Trigger A Form](#how-to-trigger-a-form)
 5. [How To Respond With Feedback](#how-to-respond-with-feedback)
 6. [A Complete Example](#a-complete-example)
 7. [Developing This App](#developing-this-app)
-  - [Running a Development Server](#running-a-development-server)
-  - [Setting Up a PostgreSQL Database](#setting-up-a-postgresql-database)
-  - [Routes Available In Development App](#routes-available-in-development-app)
+  * [Running a Development Server](#running-a-development-server)
+  * [Setting Up a PostgreSQL Database](#setting-up-a-postgresql-database)
+  * [Routes Available In Development App](#routes-available-in-development-app)
 
 
 ### Quickstart
