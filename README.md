@@ -8,9 +8,9 @@ Unfortunately making and sending forms to your users can require an elaborate kn
 
 Django Slack Forms is here to solve these and more hurtles by using a popular [JSON Schema](https://json-schema.org/understanding-json-schema/index.html) to shape and validate your data. New forms can be created in a Django admin with a number of ways to connect it to outside data and webhooks. The app is designed to be as flexible as possible to accommodate your individual data needs and data structures.
 
-At it's most basic level, the app works like the chart below with you, the developer, being responsible for the third column (labeled `External`). Due to it's flexibility, this app is not plug-and-play, but hopefully this guide will help you install it into your current infrastructure in no time.
+At its most basic level, the app works like the chart below with you, the developer, being responsible for the third column (labeled `External`). Due to it's flexibility, this app is not plug-and-play, but hopefully this guide will help you install it into your current infrastructure in no time.
 
-![Flowchart](/docs/media/forms3.jpg)
+![Flowchart](/docs/media/forms4.jpg)
 
 ### Quickstart
 
@@ -43,8 +43,8 @@ Django Slack Forms uses a JSON and UI schema combination derived from the [JSONS
 
 To make a new form, go to your Django admin and make a new `Form` under `Slackforms`. You'll need to fill out the following properties:
 
-- `Name`: A unique name for your form. This will be used to tell Slack which form you want to open. See [Setting Up Your Slack App: Step #3](/#setting-up-your-slack-app).
-- `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](/#setting-up-your-slack-app).
+- `Name`: A unique name for your form. This will be used to tell Slack which form you want to open. See [Setting Up Your Slack App: Step #3](./#setting-up-your-slack-app).
+- `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](./#setting-up-your-slack-app).
 - `Json schema`: See [JSON Schema](/#json-schema).
 - `Ui schema`: See [UI Schema](/#ui-schema).
 - `Webhook`: See [Data Source and Webhook](/#data-source-and-webhook).
