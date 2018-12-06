@@ -3,11 +3,14 @@ import re
 import requests
 import json
 import os
+import logging
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from jsonschema import validate, exceptions
 from ..utils import schema_to_form, slack, is_float
 from ..conf import Settings
+
+logger = logging.getLogger(__name__)
 
 
 class Form(models.Model):
@@ -75,7 +78,7 @@ this template. Use "{id}" to crate the template.
         """
         Get starting data from the form's data_source given a particular id.
         """
-        if self.data_source or id == "":
+        if not self.data_source == "" and not id == "":
             url = self.data_source.format(id=id)
             r = requests.get(url=url)
             return r.json()
@@ -93,6 +96,8 @@ this template. Use "{id}" to crate the template.
                     output[prop] = int(value)
                 elif isinstance(value, float):
                     output[prop] = float(value)
+                elif self.get_prop_attr(prop, "type") == "boolean":
+                    output[prop] = bool(value)
                 elif self.get_prop_attr(prop, "format") == "date-time":
                     try:
                         date = dateparser.parse(value).isoformat()
@@ -140,7 +145,12 @@ this template. Use "{id}" to crate the template.
         source_data = self.get_form_data(data_id)
         form_data = {**source_data, **data}  # noqa: E999
         form = self.create_slack_form(form_data, data_id=data_id)
-        slack("dialog.open", dialog=form, trigger_id=trigger_id)
+        resp = slack("dialog.open", dialog=form, trigger_id=trigger_id)
+
+        if resp.get("ok", False) is True:
+            logger.info(resp)
+        else:
+            logger.error(resp)
 
     def post_to_webhook(self, processed_content, meta={}):
         """

@@ -121,7 +121,14 @@ def prop_to_input(name, json, ui, data, required):
 
     # Creating options array for select inputs
     if input["type"] == "select":
-        if "source" in json:
+        if json.get("type", "") == "boolean":
+            bools = ["True", "False"]
+            names = json["enumNames"] if "enumNames" in json else bools
+            input["options"] = [
+                {"value": val, "label": names[idx]}
+                for idx, val in enumerate(bools)
+            ]
+        elif "source" in json:
             if json["source"] in SELECT_EXTERNAL_SOURCES:
                 # source --> data_source (if a Slack source keyword)
                 input["data_source"] = json["source"]

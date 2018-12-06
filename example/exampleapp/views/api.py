@@ -9,7 +9,7 @@ from django.conf import settings
 
 FIELDS = ["name", "age", "title", "date", "permissions"]
 DATABASE = {}  # Fake external database
-CHANNEL = "CEK26NZM2"
+CHANNEL = "CEMH4MAEN"
 
 
 class API(View):
