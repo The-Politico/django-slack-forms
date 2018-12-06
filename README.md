@@ -67,7 +67,7 @@ This app takes inspiration from `react-jsonschema-form` but instead of rendering
 | `ui:placeholder`| Placeholder value      | No       | None     | `"Value"`   | `placeholder`            |
 | `ui:value`      | Default value          | No       | None     | `"Value"`   | `value` & `submit_label` |
 | `ui:help`       | Help text to display   | No       | None     | `"A number"`| `hint`                   |
-| `ui:order`      | The place of the input | No       | `0`      | `1`         | None                     |
+| `ui:order`      | The place of the input | No       | `999999` | `1`         | None                     |
 
 See an example [here](/EXAMPLES.md#ui-schema).
 

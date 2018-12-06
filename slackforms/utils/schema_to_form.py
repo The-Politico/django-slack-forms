@@ -7,6 +7,7 @@ DEFAULTS = {
     "title": "Form",
     "submit_label": "Submit",
     "element": {"label": "Field", "type": "text", "options": []},
+    "ui:order": 999999,
 }
 
 """
@@ -55,7 +56,8 @@ def schema_to_form(name, json, ui, data={}):
         )
 
     form["elements"] = sorted(
-        form["elements"], key=lambda k: k["order"] if "order" in k else 999999
+        form["elements"],
+        key=lambda k: k["order"] if "order" in k else DEFAULTS["ui:order"]
     )
 
     return form
