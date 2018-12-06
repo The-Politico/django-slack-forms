@@ -45,10 +45,10 @@ To make a new form, go to your Django admin and make a new `Form` under `Slackfo
 
 - `Name`: A unique name for your form. This will be used to tell Slack which form you want to open. See [Setting Up Your Slack App: Step #3](#setting-up-your-slack-app).
 - `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](#setting-up-your-slack-app).
-- `Json schema`: See [JSON Schema](/#json-schema).
-- `Ui schema`: See [UI Schema](/#ui-schema).
-- `Webhook`: See [Data Source and Webhook](/#data-source-and-webhook).
-- `Data source:`: See [Data Source and Webhook](/#data-source-and-webhook).
+- `Json schema`: See [JSON Schema](#json-schema).
+- `Ui schema`: See [UI Schema](#ui-schema).
+- `Webhook`: See [Data Source and Webhook](#data-source-and-webhook).
+- `Data source:`: See [Data Source and Webhook](#data-source-and-webhook).
 
 #### JSON Schema
 This input is for mapping out what your data looks like. All official JSON Schema properties are included plus the following two custom properties:
@@ -73,7 +73,7 @@ See an example [here](/EXAMPLES.md#ui-schema).
 
 
 #### Data Source And Webhook
-In many cases you'll want to edit a model as much as you want to create a new one. In order to connect your form to a data source, you'll need to configure an API endpoint for the form. Every form trigger (see [How To Trigger A Form](/#how-to-trigger-a-form)) which comes with a single argument (see table below). Once the argument is parsed from the trigger it will be passed to your form's `data_source` template as an `id` variable which you can you use when creating a python template string.
+In many cases you'll want to edit a model as much as you want to create a new one. In order to connect your form to a data source, you'll need to configure an API endpoint for the form. Every form trigger (see [How To Trigger A Form](#how-to-trigger-a-form)) which comes with a single argument (see table below). Once the argument is parsed from the trigger it will be passed to your form's `data_source` template as an `id` variable which you can you use when creating a python template string.
 
 Once you have data in your form, you can send the processed and validated form data to a `Webhook` which is also configured in the admin.
 
@@ -128,7 +128,7 @@ Slack Forms comes with a number of ways to trigger a form, but each one requires
 - [Message Menus (dropdowns)](https://api.slack.com/docs/message-buttons)
 - [Message Actions](https://api.slack.com/actions)
 
-This app is built to handle each of these by default if they're set up properly in your Slack App dashboard (see [Setting Up Your Slack App](/#setting-up-your-slack-app)). Forms can also be triggered in two manual ways, but they still require a `trigger_id`. You might want to do this if you want to intercept a user action (e.g. a slash command), do something, and then trigger the form.
+This app is built to handle each of these by default if they're set up properly in your Slack App dashboard (see [Setting Up Your Slack App](#setting-up-your-slack-app)). Forms can also be triggered in two manual ways, but they still require a `trigger_id`. You might want to do this if you want to intercept a user action (e.g. a slash command), do something, and then trigger the form.
 
 The first way to manually trigger a form is to send a POST request to the `SLACKFORMS_ROOT_URL`. The request data must have a single key named `payload` which is a serialized JSON object. That payload MUST have the following properties:
 
