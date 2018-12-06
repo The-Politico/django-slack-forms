@@ -13,7 +13,7 @@ At its most basic level, the app works like the chart below with you, the develo
 ![Flowchart](/docs/media/forms4.jpg)
 
 ### Table of Contents
-1. [Quickstart](#wuickstart)
+1. [Quickstart](#quickstart)
 2. [Making Forms](#making-forms)
   1. [JSON Schema](#json-schema)
   2. [UI Schema](#ui-schema)
