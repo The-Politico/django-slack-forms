@@ -60,7 +60,7 @@ class API(View):
 
         # create feedback message
         message = {"channel": CHANNEL}
-        message["text"] = "`{}` created a new `{}` entry: {}.".format(
+        message["text"] = "`{}` created a new `{}` entry: `{}`.".format(
             username, form_name, data_id
         )
         message["attachments"] = [
