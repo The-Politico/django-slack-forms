@@ -18,7 +18,7 @@ At its most basic level, the app works like the chart below with you, the develo
   1. [JSON Schema](#json-schema)
   2. [UI Schema](#ui-schema)
   3. [Data Source And Webhook](#data-source-and-webhook)
-3. [Setting Up Your Slack App](setting--up-your-slack-app)
+3. [Setting Up Your Slack App](setting-up-your-slack-app)
 4. [How To Trigger A Form](#how-to-trigger-a-form)
 5. [How To Respond With Feedback](#how-to-respond-with-feedback)
 6. [A Complete Example](#a-complete-example)
