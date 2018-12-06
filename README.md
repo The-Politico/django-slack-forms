@@ -51,7 +51,7 @@ To make a new form, go to your Django admin and make a new `Form` under `Slackfo
 - `Data source:`: See [Data Source and Webhook](#data-source-and-webhook).
 
 #### JSON Schema
-This input is for mapping out what your data looks like. All official JSON Schema properties are included plus the following two custom properties:
+This input is for mapping out what your data looks like. All official [JSON Schema](https://json-schema.org/understanding-json-schema/index.html) properties are included plus the following two custom properties:
 
 - `enumNames`: An array of display names for the values provided in the object's `enum` property. See [here](https://github.com/mozilla-services/react-jsonschema-form#custom-labels-for-enum-fields) for more.
 - `source`: An alternative way of providing acceptable values. It should be a valid URL which serves an array of JSON objects with at least `value` and `label` fields. You can also provide one of the following values to use Slack's dynamic content (`users`, `channels`, `conversations`). See [here](https://api.slack.com/dialogs#dynamic_select_elements) for more on dynamic options.
@@ -61,13 +61,13 @@ See an example [here](/EXAMPLES.md#json-schema).
 #### UI Schema
 This app takes inspiration from `react-jsonschema-form` but instead of rendering components, it renders an object that can be interpreted by Slack. For those familiar with Slack's form schema, I've provided the corresponding Slack property each of these is mapped to.
 
-| Property        | Description            | Required  | Example     | Slack Prop               |
-| --------------- | ---------------------- | --------- | ----------- | ------------------------ |
-| `ui:widget`     | The type of form input | Yes       | `"text"`    | `type` & `subtype`       |
-| `ui:placeholder`| Placeholder value      | No        | `"Value"`   | `placeholder`            |
-| `ui:value`      | Default value          | No        | `"Value"`   | `value` & `submit_label` |
-| `ui:help`       | Help text to display   | No        | `"A number"`| `hint`                   |
-| `ui:order`      | The place of the input | No        | `1`         | None                     |
+| Property        | Description            | Required | Default  | Example     | Slack Prop               |
+| --------------- | ---------------------- | -------- | -------- | ----------- | ------------------------ |
+| `ui:widget`     | The type of form input | No       | `"text"` | `"select"`  | `type` & `subtype`       |
+| `ui:placeholder`| Placeholder value      | No       | None     | `"Value"`   | `placeholder`            |
+| `ui:value`      | Default value          | No       | None     | `"Value"`   | `value` & `submit_label` |
+| `ui:help`       | Help text to display   | No       | None     | `"A number"`| `hint`                   |
+| `ui:order`      | The place of the input | No       | `0`      | `1`         | None                     |
 
 See an example [here](/EXAMPLES.md#ui-schema).
 
