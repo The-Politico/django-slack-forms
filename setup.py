@@ -2,8 +2,8 @@ from setuptools import find_packages, setup
 
 setup(
     name="django-slack-forms",
-    version="0.0.0-alpha",
-    description="",
+    version="0.0.1",
+    description="A utility to handle the creation and processing of Slack Dialogs.",
     url="https://github.com/The-Politico/django-slack-forms",
     author="POLITICO interactive news",
     author_email="interactives@politico.com",
