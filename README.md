@@ -2,6 +2,8 @@
 
 # django-slack-forms
 
+*A utility to handle the creation and processing of Slack Dialogs.*
+
 [Slack Dialogs](https://api.slack.com/dialogs) (forms) are a great and easy way to get data from members of your Slack team. They can be called in a number of ways, they're designed to work on desktop and mobile, and they're already on a familiar platform.
 
 Unfortunately making and sending forms to your users can require an elaborate knowledge of the often-arcane Slack API. Furthermore, validation beyond required fields and character limit has to be handled programmatically by your server which more often than not means you just don't do it.
