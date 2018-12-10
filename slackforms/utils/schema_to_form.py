@@ -18,7 +18,7 @@ TEXT_INPUTS = ["email", "number", "tel", "url"]
 """
 Special Slack data sources for dynamic lists.
 """
-SELECT_EXTERNAL_SOURCES = ["users", "channels", "conversations"]
+SELECT_EXTERNAL_SOURCES = ["users", "channels", "external", "conversations"]
 
 
 def schema_to_form(name, json, ui, data={}):
