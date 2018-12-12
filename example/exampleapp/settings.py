@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "slackforms",
+    "testapi",
 ]
 
 MIDDLEWARE = [
