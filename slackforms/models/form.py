@@ -161,6 +161,7 @@ this template. Use "{id}" to crate the template.
         meta_data = meta
         meta_data["response_url"] = self.get_resonse_url()
         meta_data["form_name"] = self.name
+        meta_data["token"] = Settings.SLACK_VERIFICATION_TOKEN
         data["slackform_meta_data"] = json.dumps(meta_data)
         if not self.webhook == "":
             if meta["data_id"] is None:

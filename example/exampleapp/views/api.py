@@ -9,7 +9,7 @@ from django.conf import settings
 
 FIELDS = ["name", "age", "title", "date", "permissions"]
 DATABASE = {}  # Fake external database
-CHANNEL = "CEMH4MAEN"
+CHANNEL = "general"
 
 
 class API(View):
@@ -25,6 +25,11 @@ class API(View):
         data_id = meta["data_id"]
         username = meta["user"]["name"]
         form_name = meta["form_name"]
+        token = meta["token"]
+
+        # authenticate the request
+        if token != settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN:
+            return HttpResponse("Invalid auth token.", status=403)
 
         # handle the API logic
         if data_id in DATABASE:
@@ -51,6 +56,11 @@ class API(View):
         response_url = meta["response_url"]
         username = meta["user"]["name"]
         form_name = meta["form_name"]
+        token = meta["token"]
+
+        # authenticate the request
+        if token != settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN:
+            return HttpResponse("Invalid auth token.", status=403)
 
         # handle the API logic
         data_id = "%032x" % random.getrandbits(128)

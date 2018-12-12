@@ -1,26 +1,80 @@
-### Making Forms
+# Creating Slack Forms
 
 Django Slack Forms uses a JSON and UI schema combination derived from the [JSONSchema](https://json-schema.org/understanding-json-schema/index.html) standard and [`react-jsonschema-form`](https://github.com/mozilla-services/react-jsonschema-form).
 
+The JSON schema shapes what your data looks like. Is it a string or an integer? Does it have a maximum value or character length? Should it be one of a list of values? These are all questions that can be answered in your JSON Schema.
+
+Alternatively, The UI Schema determines what the form looks like on Slack and is tied much more closely to the Slack API's options. Is that input a single row input or a larger text area? Does the input have a placeholder or default value? Is there any help text provided? These kinds of questions are answered in your UI Schema.
+
+## The Django Admin
+
 To make a new form, go to your Django admin and make a new `Form` under `Slackforms`. You'll need to fill out the following properties:
 
-- `Name`: A unique name for your form. This will be used to tell Slack which form you want to open. See [Setting Up Your Slack App: Step #3](#setting-up-your-slack-app).
-- `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](#setting-up-your-slack-app).
+- `Name`: A unique name for your form.
+- `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](Slack-App.md).
 - `Json schema`: See [JSON Schema](#json-schema).
 - `Ui schema`: See [UI Schema](#ui-schema).
-- `Webhook`: See [Data Source and Webhook](#data-source-and-webhook).
-- `Data source:`: See [Data Source and Webhook](#data-source-and-webhook).
 
-#### JSON Schema
+These properties are optional and will be covered in subsequent sections:
+- `Webhook`: See [Configuring An Endpoint](Configuring-An-Endpoint.md).
+- `Data source:`: See [Configuring An API](Configuring-An-API.md).
+
+### JSON Schema
 This input is for mapping out what your data looks like. All official [JSON Schema](https://json-schema.org/understanding-json-schema/index.html) properties are included plus the following two custom properties:
 
-- `enumNames`: An array of display names for the values provided in the object's `enum` property. See [here](https://github.com/mozilla-services/react-jsonschema-form#custom-labels-for-enum-fields) for more.
-- `source`: An alternative way of providing acceptable values. It should be a valid URL which serves an array of JSON objects with at least `value` and `label` fields. You can also provide one of the following values to use Slack's dynamic content (`users`, `channels`, `conversations`). See [here](https://api.slack.com/dialogs#dynamic_select_elements) for more on dynamic options.
+- `enumNames`: An array of display names for the values provided in the object's `enum` property. See [here](https://github.com/mozilla-services/react-jsonschema-form#custom-labels-for-enum-fields) for more on the idea behind it.
+- `source`: An alternative way of providing acceptable values. [See Configuring Source Data](Configuring-Source-Data.md) for more.
 
-See an example [here](/EXAMPLES.md#json-schema).
+An added limitation imposed by Slack is a five-input limit. If you try to create a form with more than five properties, you will receive an error in the admin.
 
-#### UI Schema
-This app takes inspiration from `react-jsonschema-form` but instead of rendering components, it renders an object that can be interpreted by Slack. For those familiar with Slack's form schema, I've provided the corresponding Slack property each of these is mapped to.
+Because this standard is created and maintained by others, I recommend using the links provided above for more comprehensive help on creating JSON schemas.
+
+#### Example
+
+To get started, check out this simple example which defines five properties (two of which are required) with different data signatures:
+
+```javascript
+{
+  "type": "object",
+  "title": "Name of Your Form",
+  "required": [
+    "name",
+    "title"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "title": {
+      "type": "string",
+      "title": "Job Title",
+    },
+    "age": {
+      "type": "number",
+      "title": "Age",
+      "minimum": 21
+    },
+    "biography": {
+      "type": "string",
+      "title": "Bio",
+      "maxLength": 300
+    },
+    "permissions": {
+      "type": "string",
+      "title": "Permissions",
+      "enum": ["admin", "edit", "user"],
+      "enumNames": ["Administrator", "Editor", "User"]
+    }
+  }
+}
+```
+
+### UI Schema
+This app takes inspiration from `react-jsonschema-form` but instead of rendering components, it renders an object that can be interpreted by Slack. It's formed by creating a dictionary with keys that match those in your JSON Schemas `properties`. Those dictionaries can then take the following options which help define what it's form input looks like. All of those properties have default values so none of them are required.
+
+
+For those familiar with Slack's form schema, I've provided the corresponding Slack property each of these is mapped to.
 
 | Property        | Description            | Required | Default  | Example     | Slack Prop               |
 | --------------- | ---------------------- | -------- | -------- | ----------- | ------------------------ |
@@ -28,39 +82,46 @@ This app takes inspiration from `react-jsonschema-form` but instead of rendering
 | `ui:placeholder`| Placeholder value      | No       | None     | `"Value"`   | `placeholder`            |
 | `ui:value`      | Default value          | No       | None     | `"Value"`   | `value` & `submit_label` |
 | `ui:help`       | Help text to display   | No       | None     | `"A number"`| `hint`                   |
-| `ui:order`      | The place of the input | No       | `999999` | `1`         | None                     |
+| `ui:order`      | The place of the input relative to other inputs | No       | `999999` | `1`         | None                     |
 
-See an example [here](/EXAMPLES.md#ui-schema).
+The available widgets are: `text`, `textarea`, `select`, `email`\*, `number`\*, `tel`\*, and `url`\*. They must be spelled in all-lowercase. Also note that the `*` widgets are specialized text fields which control the keyboard on mobile devices. These subtypes don't come with any built in validation. For more on text subtypes, check out [the Slack docs](https://api.slack.com/dialogs#text_elements).
 
+### The `submit` Key
 
-#### Data Source And Webhook
-In many cases you'll want to edit an existing record as well as create new ones. In order to connect your form to a data source, you'll need to configure an API endpoint for the form, and to do that the user action that triggers that form needs to have a ID associated with it.
+The UI Schema can also take a special key called `submit`, which shouldn't match with any of the properties in your JSON Schema. It must be a dictionary which only takes a single key (`ui:value`) which allows you to customize the text of the submit button on Slack. This too is optional and will default to `Submit` if no value is provided.
 
-Luckily, every form trigger (see [How To Trigger A Form](#how-to-trigger-a-form)) comes with a single argument (see table below). Once the argument is parsed from the trigger it will be passed to your form's `data_source` template as an `id` variable which you can you use when creating a Python template string.
+#### Example
+Here's an example for what a UI Schema might look like to match the example JSON Schema above:
 
-Once you have data in your form, you can send the processed and validated form data to a `Webhook` which is also configured in the admin.
-
-| Method                                                 | Location                   | Example                                                         |
-| ------------------------------------------------------ | -------------------------- | --------------------------------------------------------------- |
-| [Slash Commands](https://api.slack.com/slash-commands) | The text after the command | `/my-command [ARGUMENT]`                                        |
-| [Buttons](https://api.slack.com/docs/message-buttons)  | The `name` of the button   | `{"name": "[ARGUMENT]", "text": "My Button", "type": "button"}` |
-| [Menus](https://api.slack.com/docs/message-menus)      | The  `value` of the option | `{"text": "My Option", "value": "[ARGUMENT]"}`                  |
-| [Actions](https://api.slack.com/actions)               | The text of the message    | `[ARGUMENT]`                                                    |
-
-###### Example
-Let's take a look at an example.
-
-You're making a new user form which adds/updates a `User` to your database. Your API is a standard one which looks and acts like this:
+```javascript
+{
+  "name": {
+    "ui:widget": "text",
+    "ui:placeholder": "Johny Appleseed",
+    "ui:order": 1
+  },
+  "title": {
+    "ui:widget": "select",
+    "ui:order": 2
+  },
+  "age": {
+    "ui:widget": "number",
+    "ui:value": 21,
+    "ui:order": 3
+  },
+  "biography": {
+    "ui:widget": "textarea",
+    "ui:help": "300 character limit",
+    "ui:order": 4
+  },
+  "permissions": {
+    "ui:widget": "select",
+    "ui:order": 5
+  },
+  "submit": {
+    "ui:value": "Save"
+  }
+}
 ```
-https://example.com/api/user/UNIQUE_ID/ <-- GET requests return the data of the record with that UNIQUE_ID
-https://example.com/api/user/ <-- POST requests create a new record (request data has no ID)
-https://example.com/api/user/ <-- PUT requests update a record (request data has ID)
-```
 
-To properly set up your form to use this setup you'd use the following values:
-- Data Source: `https://example.com/api/user/{id}/`
-- Webhook: `https://example.com/api/user/`
-
-This app will fill the `{id}` in `https://example.com/api/user/{id}/` (if it exists) with the argument retrieved from the trigger and send a GET request to get starting data for the form.
-
-Once processed, forms triggered without an ID will send POST requests to `https://example.com/api/user/` while forms triggered WITH an ID will send PUT requests to `https://example.com/api/user/` with the ID in it's `slackforms_meta_data` (see [this](/EXAMPLES.md#form-data-webhook) for an example of what that payload looks like).
+Next up: [Configure an endpoint to receive your form data.](docs/Configuring-An-Endpoint.md)

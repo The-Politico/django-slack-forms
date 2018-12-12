@@ -1,5 +1,21 @@
 # How To Trigger A Form
 
+#### Data Source And Webhook
+In many cases you'll want to edit an existing record as well as create new ones. In order to connect your form to a data source, you'll need to configure an API endpoint for the form, and to do that the user action that triggers that form needs to have a ID associated with it.
+
+Luckily, every form trigger (see [How To Trigger A Form](#how-to-trigger-a-form)) comes with a single argument (see table below). Once the argument is parsed from the trigger it will be passed to your form's `data_source` template as an `id` variable which you can you use when creating a Python template string.
+
+Once you have data in your form, you can send the processed and validated form data to a `Webhook` which is also configured in the admin.
+
+| Method                                                 | Location                   | Example                                                         |
+| ------------------------------------------------------ | -------------------------- | --------------------------------------------------------------- |
+| [Slash Commands](https://api.slack.com/slash-commands) | The text after the command | `/my-command [ARGUMENT]`                                        |
+| [Buttons](https://api.slack.com/docs/message-buttons)  | The `name` of the button   | `{"name": "[ARGUMENT]", "text": "My Button", "type": "button"}` |
+| [Menus](https://api.slack.com/docs/message-menus)      | The  `value` of the option | `{"text": "My Option", "value": "[ARGUMENT]"}`                  |
+| [Actions](https://api.slack.com/actions)               | The text of the message    | `[ARGUMENT]`                                                    |
+
+4. If you want to use message actions to call new forms, click `Create New Action`. Give it a name and description, and paste the `Name` of your form (the one you made in the Django admin) in `Callback ID`.
+
 Slack Forms comes with a number of ways to trigger a form, but each one requires a `trigger_id` provided by Slack. As of 2018, the following Slack features provide `trigger_id`s:
 - [Slash Commands](https://api.slack.com/slash-commands)
 - [Message Buttons](https://api.slack.com/docs/message-buttons)
