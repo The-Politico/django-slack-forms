@@ -180,6 +180,7 @@ After a form is submitted, validated, and processed the form data will be sent t
 ```javascript
 {
   "slackforms_meta_data": { // this dictionary will be a serialized string
+    "token": "3829AGBWI1923H2N194" // Slack verification token
     "data_id": "321231", // The ID of the model being updated or null in POST requests
     "team": { // the team the form was finished in
       "id": "TEMGAT2Z",
@@ -208,11 +209,11 @@ In order to allow for `slackforms_meta_data` to be a multi-layer dictionary, it 
 
 ```javascript
 {
-  "slackforms_meta_data": "{\"data_id\":\"321231\",\"team\":{\"id\":\"TEMGAT2Z\",\"domain\":\"your-team\"},\"channel\":{\"id\":\"C8LAQNJ\",\"name\":\"general\"},\"user\":{\"id\":\"UELJYGUAJ\",\"name\":\"briz.andrew\"},\"response_url\":\"https://example.com/forms/callback/\",\"form_name\":\"Test\"}",
+  "slackforms_meta_data": "{ ... }",
   "name": "Andrew Briz",
   "title": "apps-dev",
   "age": "22",
   "biography": "He's a developer on POLITICO's Interactives Team.",
-  "permissions": "admin"
+  "permissions": "admin",
 }
 ```
