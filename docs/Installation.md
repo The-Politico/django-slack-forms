@@ -43,4 +43,4 @@ To do that set the URL path in your `urls.py` to `slack-forms/`. Then set your `
 
 Finally, go back to your Slack App Dashboard and set all the `Request URL`s to `http://example.com/slack-forms/` too.
 
-Next up: [create a form in your Django admin.](docs/Creating-Forms.md)
+Next up: [create a form in your Django admin.](Creating-Forms.md)

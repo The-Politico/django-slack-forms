@@ -70,7 +70,7 @@ Now when your form is called in Slack, there will be a dropdown menu with all 10
 
 ```javascript
 {
-  "slackforms_meta_data": " ... ",
+  "slackform_meta_data": " ... ",
   "senator": "brown-sherrod"
 }
 ```

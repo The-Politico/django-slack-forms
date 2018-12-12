@@ -6,7 +6,7 @@ This is one of those points where the app's flexibility makes documentation diff
 
 Each form you create (as in each individual schema) can have its own endpoint. When a Slack form of that type is submitted, validated, and processed, your designated endpoint will receive a POST request with the processed data and some extra metadata.
 
-The data will be a JSON object with keys that match the `properties` you named in your JSON Schema. There will also be an extra key named `slackforms_meta_data` which will be a stringified dictionary containing metadata. In order to use the metadata, you'll have to parse it (such as with `json.loads()` in Python or `JSON.parse()` in JavaScript).
+The data will be a JSON object with keys that match the `properties` you named in your JSON Schema. There will also be an extra key named `slackform_meta_data` which will be a stringified dictionary containing metadata. In order to use the metadata, you'll have to parse it (such as with `json.loads()` in Python or `JSON.parse()` in JavaScript).
 
 `django-slack-forms` will send the request and forget about the form data. It doesn't care about the response status (or lack thereof). It's up to your endpoint to be available, do whatever you need it to, and log errors in a manner appropriate for you. The app does come with a way to provide feedback to users in Slack which is detailed in the advanced [Slack Feedback](Slack-Feedback.md) section.
 
@@ -31,7 +31,7 @@ Your endpoint will receive the following POST request if I (Andrew Briz) were to
 
 ```javascript
 {
-  "slackforms_meta_data": { // this dictionary will be a serialized string
+  "slackform_meta_data": { // this dictionary will be a serialized string
     "token": "3829AGBWI1923H2N194" // Slack verification token
     "data_id": "321231", // The ID of the model being updated or null in POST requests
     "team": { // the team the form was finished in
@@ -57,7 +57,7 @@ Your endpoint will receive the following POST request if I (Andrew Briz) were to
 }
 ```
 
-You might see some keys in the metadata that are unclear (`data_id` and `response_url`). Don't worry about them for now, I'll cover how to use them in the advanced sections. Remember though that the `slackforms_meta_data` is actually a stringified dictionary so the request actually looks like this:
+You might see some keys in the metadata that are unclear (`data_id` and `response_url`). Don't worry about them for now, I'll cover how to use them in the advanced sections. Remember though that the `slackform_meta_data` is actually a stringified dictionary so the request actually looks like this:
 
 ```javascript
 {
@@ -66,7 +66,7 @@ You might see some keys in the metadata that are unclear (`data_id` and `respons
   "age": "22",
   "biography": "He's a developer on POLITICO's Interactives Team.",
   "permissions": "admin",
-  "slackforms_meta_data": "{ ... }",
+  "slackform_meta_data": "{ ... }",
 }
 ```
 
@@ -74,7 +74,7 @@ You might see some keys in the metadata that are unclear (`data_id` and `respons
 
 You probably shouldn't have an open endpoint that will allow any user with the URL to send successful POST requests to your endpoint.
 
-One simple way to verify that the request is coming from `django-slack-forms` is to check the `token` inside of `slackforms_meta_data`. This token will be the same `SLACK_VERIFICATION_TOKEN` you set in your settings which you can also find in your Slack App Dashboard.
+One simple way to verify that the request is coming from `django-slack-forms` is to check the `token` inside of `slackform_meta_data`. This token will be the same `SLACK_VERIFICATION_TOKEN` you set in your settings which you can also find in your Slack App Dashboard.
 
 ## Connecting An Endpoint
 Once you've decided on an endpoint and have it hosted, you should have have a URL for it. Take that URL and save it as the form's `Webhook` property in the Django admin of `django-slack-forms`.
@@ -83,10 +83,10 @@ Next up: check out one of the following advanced topics:
 
 Once you have the basics down, you can move on to more advanced topics like:
 
-1. [External Source Data](docs/Configuring-Source-Data.md)
+1. [External Source Data](Configuring-Source-Data.md)
 
-2. [REST API Integration](docs/Integrating-An-API.md)
+2. [REST API Integration](Integrating-An-API.md)
 
-3. [Custom Form Triggers](docs/Custom-Form-Triggers.md)
+3. [Custom Form Triggers](Custom-Form-Triggers.md)
 
-4. [Posting Feedback In Slack](docs/Slack-Feedback.md)
+4. [Posting Feedback In Slack](Slack-Feedback.md)

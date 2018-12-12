@@ -18,4 +18,4 @@ In order to get `django-slack-forms` working, you'll need to have a custom app i
 
 With those three tokens ready to go, you can install `django-slack-forms` in your Django app.
 
-Next up: [install this app into your Django application.](docs/Installation.md).
+Next up: [install this app into your Django application.](Installation.md).

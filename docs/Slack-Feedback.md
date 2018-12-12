@@ -1,37 +1,109 @@
-### How To Respond With Feedback
-Once your webhook receives data and processes it accordingly, you may want to post a message in Slack to confirm it's success or indicate it's failure. That's what the `response_url` is for.
+# Posting Feedback In Slack
 
-In the meta data for the request payload sent to your webhook is a URL. You can send a POST request to it in order to post a message in Slack. The meta data also comes with information about the channel the form was filled out in and the user who filled it out. This can be useful for creating a proper feedback message.
+*Note: This is an advanced section. It's expected that you have an understanding of the app outlined in the basic sections of these docs before reading this page.*
 
-To post the message, send a POST request to the `request_url` with the `token` property set to the same value as `SLACKFORMS_SLACK_VERIFICATION_TOKEN`. It should also have a `payload` property which must be a serialized dictionary with the values you'd normally pass to a slack `chat.postMessage` request. You can see those properties [here](https://api.slack.com/methods/chat.postMessage) and use [this tool](https://api.slack.com/docs/messages/builder) to help you craft rich text messages with attachments.
+Once your webhook receives data and processes it accordingly, you may want to post a message in Slack to confirm it's success or indicate it's failure.
 
-Remember that the Slack account posting the message is actually the Slack Forms bot. You can use this to your advantage to allow for editing after a new record has been added since interactive message functionality is already pointing to Slack Form's handlers.
+`django-slack-forms` handles posting messages like it does most things: through webhooks. It includes two different endpoints located at `/callback/` and `/message/` (relative to the root of the app) which offer variable levels of flexibility and therefore complexity.
 
-###### Example
-Let's take a look at an example.
+## Posting Callback Messages (`/callback/`)
+In the meta data for the request payload sent to your webhook is a URL under the key of `response_url`. You can send it a POST request to post a message in Slack. The meta data also comes with information about the channel the form was filled out in and the user who filled it out. This can be useful for creating a rich feedback message.
 
-Just like before your `https://example.com/api/user/` endpoint takes POST requests that adds a new record. The endpoint can then respond with the following confirmation message:
+The POST request for this endpoint should include the following properties:
+
+| Property      | Description                                          | Required                     |
+| ------------- | ---------------------------------------------------- | ---------------------------- |
+| `token`       | The Slack verification token of your app             | Yes                          |
+| `channel`     | The channel to post the message in (ID or name)      | Yes                          |
+| `text`        | The main text of the message                         | No                           |
+| `attachments` | A list of [Slack attachments](https://api.slack.com/docs/message-attachments) to include                        | No                           |
+| `new`         | The text of a button to trigger a new form*          | No                           |
+| `edit`        | The text of a button to edit a record via form*      | No                           |
+| `delete`      | The text of a button to delete a record via form*    | No                           |
+| `data_id`     | The ID of the record to edit/delete                  | If `edit` or `delete`        |
+| `form`        | The unique `name` of the form to trigger a change in | If `new`, `edit` or `delete` |
+
+<em>* New, edit, and delete buttons will only appear if a value is provided.</em>
+
+#### Example
+
+Consider the Django application that handles support tickets created in [Integrating A REST API](Integrating-An-API.md). When a new instance has been saved, a message should appear in Slack with the ability to edit and delete it.
+
+For a quick refresher take a look at the metadata sent to this webhook (remember this is a stringified dictionary found in the request data's `slackform_meta_data` key.). Some of this might be useful for creating a rich feedback message.
 
 ```javascript
 {
-  "channel": "[CHANNEL_ID]",
-  "text": "[USER] created a new [MODEL].",
-  "attachments": [
-      {
-          "fallback": "Edit N/A",
-          "callback_id": "[FORM_NAME]",
-          "actions": [
-              {
-                "name": "[NEW_RECORD_ID]",
-                "text": "Edit",
-                "type": "button"
-              }
-          ],
-      }
-  ]
+  "token": "3829AGBWI1923H2N194"
+  "data_id": "321231", // The ID of the model being updated or null in POST requests
+  "team": { // the team the form was finished in
+    "id": "TEMGAT2Z",
+    "domain": "your-team"
+  },
+  "channel": { // the channel the form was finished in
+    "id": "C8LAQNJ",
+    "name": "general"
+  },
+  "user": { // the user who finished the form
+    "id": "UELJYGUAJ",
+    "name": "briz.andrew"
+  },
+  "response_url": "https://example.com/forms/callback/",
+  "form_name": "Ticket" // the unique name of the form that was filled out
 }
 ```
 
-Since Slack Forms is the one making the message, simply by including the right `callback_id` and `name` you can easily make an edit button which calls the same form, but this time with some data pre-filled and with an internal state that will tell Slack Form to send a PUT request next time.
 
-This example isn't the whole payload. For a complete take on what that should look see [this example](/EXAMPLES.md#callbacks-to-create-messages).
+```python
+# imports....
+
+from django.conf import settings
+
+class TicketAPI(View):
+    def post(self, request):
+        # process the request data...
+
+        # authenticate the request...
+
+        # handle the API logic...
+        # t is created to represent the new object
+
+
+        # process metadata
+        meta_data = request.POST.get("slackform_meta_data")
+        meta = json.loads(meta_data)
+        response_url = meta["response_url"]
+        username = meta["user"]["name"]
+        channel = meta["channel"]["name"]
+        form_name = meta["form"]
+        token = meta["token"]
+
+
+        # create feedback message
+        callback_data = {
+            "token": settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN,
+            "channel": channel,
+            "data_id": t.pk,
+            "form": form_name,
+            "text": "`{}` created a new `{}` entry: {}(`{}`).".format(  # brizandrew created a new Ticket entry: Bug Report(3)
+                username, form_name, t.name, t.pk
+            ),
+            "delete": "Delete",
+            "edit": "Edit",
+        }
+        requests.post(url=response_url, data=callback_data)
+
+        return HttpResponse(status=200)
+```
+
+## Posting Custom Messages (`/messages/`)
+
+This endpoint is the most flexible and once verified will simply post a message. For more on creating messages you can check out [the official Slack docs](https://api.slack.com/docs/messages) and use their [message builder utility](https://api.slack.com/docs/messages/builder).
+
+The message data must be a stringified dictionary that is sent through with the POST request under the key of `payload`. You must also send the Slack verification token for you app. That request should look like this:
+
+```javascript
+{
+  "token": "S3C639pZqXvR2toPwcng",
+  "payload": "{ ... }"
+}
+```

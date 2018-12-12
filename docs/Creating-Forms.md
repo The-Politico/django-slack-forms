@@ -124,4 +124,4 @@ Here's an example for what a UI Schema might look like to match the example JSON
 }
 ```
 
-Next up: [Configure an endpoint to receive your form data.](docs/Configuring-An-Endpoint.md)
+Next up: [Configure an endpoint to receive your form data.](Configuring-An-Endpoint.md)

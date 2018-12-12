@@ -127,6 +127,7 @@ Forms can be triggered manually by hitting the root of the app with a proper pay
     "token": "S3C639pZqXvR2toPwcng",
     "trigger_id": "32fneo2043",  // sent to your App from Slack via a user action
     "data_id": "321231",  // optional
+    "method": "POST" // optional (either "POST" or "PUT")
     "data": {  // optional
       "name": "Andrew Briz Override"
     },
@@ -138,13 +139,56 @@ In order to properly parse the request, the `payload` dictionary should be strin
 
 ```javascript
 {
-  "payload": "{\"type\":\"manual\",\"form\":\"Test\",\"token\":\"S3C639pZqXvR2toPwcng\",\"trigger_id\":\"32fneo2043\",\"data_id\":\"321231\",\"data\":{\"name\":\"Andrew Briz Override\"}}"
+  "payload": "{ ... }"
+}
+```
+
+### Callback
+Forms can be triggered manually by hitting the root of the app with a proper payload.
+
+```javascript
+{
+  "payload": {
+    "type": "manual",
+    "form": "Test",
+    "token": "S3C639pZqXvR2toPwcng",
+    "trigger_id": "32fneo2043",  // sent to your App from Slack via a user action
+    "data_id": "321231",  // optional
+    "method": "POST" // optional (either "POST" or "PUT")
+    "data": {  // optional
+      "name": "Andrew Briz Override"
+    },
+  }
+}
+```
+
+In order to properly parse the request, the `payload` dictionary should be stringified (such as with `json.dumps()`) so that the request data actually looks like this in the end:
+
+```javascript
+{
+  "payload": "{ ... }"
+}
+```
+
+### Callbacks To Create Messages
+Once a message has been processed, message feedback can be sent to a the `/callback/` endpoint to post messages in a given channel as the Slack Forms bot.
+
+```javascript
+{
+  "token": "S3C639pZqXvR2toPwcng",
+  "channel": "C8LAQNJ",
+  "text": "Success!", // optional
+  "new": "New", // optional
+  "delete": "Delete", // optional
+  "edit": "Edit", // optional
+  "data_id": "5", // required if "edit" or "delete" is used
+  "form": "ticket", // required if "new", "edit", or "delete" is used
 }
 ```
 
 
-### Callbacks To Create Messages
-Once a message has been processed, callbacks can be sent to a the `/callback/` endpoint to post messages in a given channel as the Slack Forms bot.
+### Callbacks To Create Messages (Custom)
+Once a message has been processed, custom messages can be sent to a the `/message/` endpoint to post messages in a given channel as the Slack Forms bot. This method is for creating custom messages and taking full advantage of the Slack API. For a simpler version see previous section.
 
 ```javascript
 {
@@ -163,7 +207,7 @@ In order to properly parse the request, the `payload` dictionary should be strin
 ```javascript
 {
   "token": "S3C639pZqXvR2toPwcng",
-  "payload": "{\"channel\": \"C8LAQNJ\",\"message\": {\"text\": \"Success!\"}"
+  "payload": "{ ... }"
 }
 ```
 
@@ -179,7 +223,7 @@ After a form is submitted, validated, and processed the form data will be sent t
 
 ```javascript
 {
-  "slackforms_meta_data": { // this dictionary will be a serialized string
+  "slackform_meta_data": { // this dictionary will be a serialized string
     "token": "3829AGBWI1923H2N194" // Slack verification token
     "data_id": "321231", // The ID of the model being updated or null in POST requests
     "team": { // the team the form was finished in
@@ -205,11 +249,11 @@ After a form is submitted, validated, and processed the form data will be sent t
 }
 ```
 
-In order to allow for `slackforms_meta_data` to be a multi-layer dictionary, it will need to be  de-stringified (such as with `json.loads()`). In reality the request data will look like this:
+In order to allow for `slackform_meta_data` to be a multi-layer dictionary, it will need to be  de-stringified (such as with `json.loads()`). In reality the request data will look like this:
 
 ```javascript
 {
-  "slackforms_meta_data": "{ ... }",
+  "slackform_meta_data": "{ ... }",
   "name": "Andrew Briz",
   "title": "apps-dev",
   "age": "22",
