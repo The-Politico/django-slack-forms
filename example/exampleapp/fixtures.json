@@ -66,10 +66,8 @@
         "submit": {
           "ui:value": "Save"
         },
-        "biography": {
-          "ui:help": "300 character limit",
-          "ui:order": 4,
-          "ui:widget": "textarea"
+        "date": {
+          "ui:order": 4
         },
         "permissions": {
           "ui:order": 5,

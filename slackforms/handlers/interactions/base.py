@@ -9,8 +9,15 @@ class InteractionBase:
     form from the callback_id and triggers it. Different interactions have
     different locations for their arguments which is coded in child classes.
     """
-    def get_argument_prop(self):
+
+    def get_id(self):
         return ""
+
+    def get_method(self):
+        if self.get_id() == "":
+            return "POST"
+        else:
+            return "PUT"
 
     def handle(self, data):
         self.data = data
@@ -22,8 +29,18 @@ class InteractionBase:
                 "Form {} not found".format(data.get("callback_id")), status=404
             )
 
-        self.form.post_to_slack(
-            data.get("trigger_id"), data_id=self.get_argument_prop()
+        meta = {
+            "data_id": self.get_id(),
+            "team": data.get("team"),
+            "channel": data.get("channel"),
+            "user": data.get("user"),
+        }
+
+        self.form.trigger(
+            data.get("trigger_id"),
+            method=self.get_method(),
+            data_id=self.get_id(),
+            meta=meta,
         )
 
         return HttpResponse(status=200)

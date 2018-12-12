@@ -74,14 +74,23 @@ this template. Use "{id}" to crate the template.
         """
         return self.get_prop_attr(prop, "type") in ["number", "integer"]
 
-    def get_form_data(self, id):
+    def post_ephemeral(self, text, meta):
+        username = meta.get("user", {}).get("id", "")
+        channel = meta.get("channel", {}).get("id", "")
+        slack("chat.postEphemeral", user=username, channel=channel, text=text)
+
+    def get_form_data(self, id, meta):
         """
         Get starting data from the form's data_source given a particular id.
         """
         if not self.data_source == "" and not id == "":
             url = self.data_source.format(id=id)
             r = requests.get(url=url)
-            return r.json()
+            try:
+                return r.json()
+            except json.decoder.JSONDecodeError:
+                self.post_ephemeral(r.text, meta)
+                return False
         else:
             return {}
 
@@ -137,12 +146,28 @@ this template. Use "{id}" to crate the template.
 
         return form
 
-    def post_to_slack(self, trigger_id, data_id="", data={}):
+    def trigger(self, trigger_id, method="POST", **kwargs):
+        """
+        Trigger a form action. Either a new form or a DELETE request to the
+        form's webhook.
+        """
+        if method == "POST" or method == "PUT":
+            self.post_to_slack(trigger_id, **kwargs)
+        if method == "DELETE":
+            self.post_to_webhook({}, method, **kwargs)
+
+    def post_to_slack(
+        self, trigger_id, data_id="", data={}, meta={}, **kwargs
+    ):
         """
         Given starting data and/or an Id to get data from a data_source,
         trigger a new form to open in Slack.
         """
-        source_data = self.get_form_data(data_id)
+        source_data = self.get_form_data(data_id, meta)
+
+        if source_data is False:
+            return
+
         form_data = {**source_data, **data}  # noqa: E999
         form = self.create_slack_form(form_data, data_id=data_id)
         resp = slack("dialog.open", dialog=form, trigger_id=trigger_id)
@@ -152,7 +177,7 @@ this template. Use "{id}" to crate the template.
         else:
             logger.error(resp)
 
-    def post_to_webhook(self, processed_content, meta={}):
+    def post_to_webhook(self, processed_content, method, meta={}, **kwargs):
         """
         Send processed form data (along with some metadata) to the form's
         designated webhook.
@@ -160,11 +185,13 @@ this template. Use "{id}" to crate the template.
         data = processed_content
         meta_data = meta
         meta_data["response_url"] = self.get_resonse_url()
-        meta_data["form_name"] = self.name
+        meta_data["form"] = self.name
         meta_data["token"] = Settings.SLACK_VERIFICATION_TOKEN
         data["slackform_meta_data"] = json.dumps(meta_data)
-        if not self.webhook == "":
-            if meta["data_id"] is None:
-                requests.post(url=self.webhook, data=data)
-            else:
-                requests.put(url=self.webhook, data=data)
+
+        if method == "PUT":
+            requests.put(url=self.webhook, data=data)
+        elif method == "DELETE":
+            requests.delete(url=self.webhook, data=data)
+        else:
+            requests.post(url=self.webhook, data=data)

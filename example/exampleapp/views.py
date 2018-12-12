@@ -22,13 +22,13 @@ class TestManual(View):
             "form": "Test",
             "token": settings.SLACK_VERIFICATION_TOKEN,
             "trigger_id": data.get("trigger_id"),
-            "data_id": "12345",
+            "method": "PUT",
+            "data_id": "17",
             "data": {"name": "Andrew Briz Override"},
         }
 
         requests.post(
-            url=settings.SLACKFORMS_ROOT_URL,
-            data={"payload": json.dumps(payload)},
+            url=settings.ROOT_URL, data={"payload": json.dumps(payload)}
         )
         return HttpResponse(status=200)
 

@@ -31,6 +31,7 @@ class Home(View):
     dialog submissions, interactive messages, message actions, and even manual
     requests sent from other servers).
     """
+
     def get(self, request):
         """
         Server status.

@@ -5,10 +5,7 @@ from slackforms.conf import settings
 """
 Slack API methods commonly handled by bots rather than apps.
 """
-BOT_METHODS = [
-    "chat.postMessage",
-    "chat.postEphemeral"
-]
+BOT_METHODS = ["chat.postMessage", "chat.postEphemeral"]
 
 
 slack_api = SlackClient(settings.SLACK_API_TOKEN)

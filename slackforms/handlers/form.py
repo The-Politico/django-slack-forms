@@ -8,6 +8,7 @@ class FormHandler:
     Handler for dialog submissions. Validates data based on the callback_id
     and returns errors. If no errors, it calls the form's webhook.
     """
+
     def handle(self, data):
         try:
             form = Form.objects.get(name=data.get("callback_id"))
@@ -28,7 +29,9 @@ class FormHandler:
                 "channel": data.get("channel"),
                 "user": data.get("user"),
             }
-            form.post_to_webhook(processed, meta=meta)
+
+            method = "POST" if meta["data_id"] is None else "PUT"
+            form.post_to_webhook(processed, method, meta=meta)
             return HttpResponse(status=200)
         else:
             errors = [validation]

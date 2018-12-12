@@ -9,6 +9,7 @@ class ManualHandler:
     property in the request data and triggers the appropriate form using the
     trigger_id in the request data.
     """
+
     def handle(self, data):
         try:
             form = Form.objects.get(name=data.get("form"))
@@ -23,6 +24,10 @@ class ManualHandler:
         if "data_id" in data:
             kwargs["data_id"] = data.get("data_id")
 
-        form.post_to_slack(data.get("trigger_id"), **kwargs)
+        method = "POST"
+        if "method" in data:
+            method = data.get("method")
+
+        form.trigger(data.get("trigger_id"), method, **kwargs)
 
         return HttpResponse("OK", status=200)
