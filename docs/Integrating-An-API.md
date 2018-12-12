@@ -10,7 +10,7 @@
 
 This guide will assume you already know the basics of creating an API in your stack of choice and handling requests appropriately. Explaining the complexities of the REST system is beyond the scope of these docs.
 
-As an example, these docs will use a standard Django View located at `https://example.com/api/` to handle these three kinds of requests, but you can use any stack you'd like.
+As an example, these docs will use a standard Django View located at `https://example.com/api/` to handle these three kinds of requests, but you can use any stack you'd like. For a fully functioning example API check out the [Test API](../example/testapi/) in this repo's example directory.
 
 ## POST
 
