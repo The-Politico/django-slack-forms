@@ -48,7 +48,7 @@ For a quick refresher take a look at the metadata sent to this endpoint (remembe
     "name": "briz.andrew"
   },
   "response_url": "https://example.com/forms/callback/",
-  "form_name": "Ticket" // the unique name of the form that was filled out
+  "form": "Ticket" // the unique name of the form that was filled out
 }
 ```
 
@@ -74,7 +74,7 @@ class TicketAPI(View):
         response_url = meta["response_url"]
         username = meta["user"]["name"]
         channel = meta["channel"]["name"]
-        form_name = meta["form"]
+        form = meta["form"]
         token = meta["token"]
 
 
@@ -83,9 +83,9 @@ class TicketAPI(View):
             "token": ENDPOINT_TOKEN,
             "channel": channel,
             "data_id": t.pk,
-            "form": form_name,
+            "form": form,
             "text": "`{}` created a new `{}` entry: {}(`{}`).".format(  # brizandrew created a new Ticket entry: Bug Report(3)
-                username, form_name, t.name, t.pk
+                username, form, t.name, t.pk
             ),
             "delete": "Delete",
             "edit": "Edit",

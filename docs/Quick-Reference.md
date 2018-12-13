@@ -156,7 +156,7 @@ After a form for a new record is submitted, validated, and processed the form da
       "name": "briz.andrew"
     },
     "response_url": "https://example.com/forms/callback/",
-    "form_name": "Test" // the unique name of the form that was filled out
+    "form": "Test" // the unique name of the form that was filled out
   },
   "name": "Andrew Briz", // property in the form
   "title": "apps-dev", // property in the form
@@ -188,7 +188,7 @@ After a form for an existing record is submitted, validated, and processed the f
       "name": "briz.andrew"
     },
     "response_url": "https://example.com/forms/callback/",
-    "form_name": "Test" // the unique name of the form that was filled out
+    "form": "Test" // the unique name of the form that was filled out
   },
   "name": "Andrew Briz", // property in the form
   "title": "apps-dev", // property in the form
@@ -220,7 +220,7 @@ If a form delete button is clicked in a feedback message, metadata will be sent 
       "name": "briz.andrew"
     },
     "response_url": "https://example.com/forms/callback/",
-    "form_name": "Test" // the unique name of the form that was filled out
+    "form": "Test" // the unique name of the form that was filled out
   }
 }
 ```

@@ -47,7 +47,7 @@ Your endpoint will receive the following POST request if I (Andrew Briz) were to
       "name": "briz.andrew"
     },
     "response_url": "https://example.com/forms/callback/",
-    "form_name": "Test" // the unique name of the form that was filled out
+    "form": "Test" // the unique name of the form that was filled out
   },
   "name": "Andrew Briz",
   "title": "apps-dev",
