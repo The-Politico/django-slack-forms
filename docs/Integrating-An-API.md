@@ -119,9 +119,9 @@ from django.conf import settings
 from myapp.models import Ticket
 
 class TicketAPI(View):
-    def post(self, request):
+    def put(self, request):
         # process the request data
-        request_data = request.POST
+        request_data = QueryDict(request.body)
         meta_data = request_data.get("slackform_meta_data")
         meta = json.loads(meta_data)
         token = meta["token"]
@@ -162,9 +162,9 @@ from django.conf import settings
 from myapp.models import Ticket
 
 class TicketAPI(View):
-    def post(self, request):
+    def delete(self, request):
         # process the request data
-        request_data = request.POST
+        request_data = QueryDict(request.body)
         meta_data = request_data.get("slackform_meta_data")
         meta = json.loads(meta_data)
         token = meta["token"]
