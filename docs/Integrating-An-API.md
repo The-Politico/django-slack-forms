@@ -7,14 +7,15 @@
   - POST requests to add new records
   - GET requests to return records
   - PUT requests to update existing records
+  - DELETE requests to remove existing records
 
 This guide will assume you already know the basics of creating an API in your stack of choice and handling requests appropriately. Explaining the complexities of the REST system is beyond the scope of these docs.
 
-As an example, these docs will use a standard Django View located at `https://example.com/api/` to handle these three kinds of requests, but you can use any stack you'd like. For a fully functioning example API check out the [Test API](../example/testapi/) in this repo's example directory.
+As an example, these docs will use a standard Django View located at `https://example.com/api/` to handle these four kinds of requests, but you can use any stack you'd like. For a fully functioning example API check out the [Test API](../example/testapi/) in this repo's example directory.
 
 ## POST
 
-POST requests to your API should be treated as requests to create new records in the database. Your form should set it's `Webhook` field to this API endpoint. It will receive the endpoint payload (see [Configuring An Endpoint](Configuring-An-Endpoint.md)) and should verify the request and add the record accordingly.
+POST requests to your API should be treated as requests to create new records in the database. Your form should set its `Endpoint` field to this API endpoint. It will receive the endpoint payload (see [Configuring An Endpoint](Configuring-An-Endpoint.md)) and should verify the request and add the record accordingly.
 
 #### Example
 
@@ -30,12 +31,13 @@ from myapp.models import Ticket
 class TicketAPI(View):
     def post(self, request):
         # process the request data
-        data = request.POST.copy()
-        meta = json.loads(data.pop("slackform_meta_data"))
+        request_data = request.POST
+        meta_data = request_data.get("slackform_meta_data")
+        meta = json.loads(meta_data)
         token = meta["token"]
 
         # authenticate the request
-        if token != settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN:
+        if token != ENDPOINT_TOKEN:
             return HttpResponse("Invalid auth token.", status=403)
 
         # handle the API logic
@@ -103,7 +105,7 @@ class TicketAPI(View):
 
 ## PUT
 
-PUT requests to your API should be treated as requests to update an existing record in the database. Your form should have it's `Webhook` field set to this API endpoint. It will receive the endpoint payload (see [Configuring An Endpoint](Configuring-An-Endpoint.md)) and should verify the request and update the record accordingly. PUT requests also have the Id of the record that should be updated in the `data_id` property of the `slackform_meta_data` dictionary.
+PUT requests to your API should be treated as requests to update an existing record in the database. Your form should have it's `Endpoint` field set to this API endpoint. It will receive the endpoint payload (see [Configuring An Endpoint](Configuring-An-Endpoint.md)) and should verify the request and update the record accordingly. PUT requests also have the Id of the record that should be updated in the `data_id` property of the `slackform_meta_data` dictionary.
 
 #### Example
 
@@ -119,13 +121,14 @@ from myapp.models import Ticket
 class TicketAPI(View):
     def post(self, request):
         # process the request data
-        data = request.POST.copy()
-        meta = json.loads(data.pop("slackform_meta_data"))
+        request_data = request.POST
+        meta_data = request_data.get("slackform_meta_data")
+        meta = json.loads(meta_data)
         token = meta["token"]
         id = meta["data_id"]
 
         # authenticate the request
-        if token != settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN:
+        if token != ENDPOINT_TOKEN:
             return HttpResponse("Invalid auth token.", status=403)
 
         # handle the API logic
@@ -145,7 +148,7 @@ class TicketAPI(View):
 
 ## DELETE
 
-DELETE requests to your API should be treated as requests to delete an existing record in the database. Your form should have it's `Webhook` field set to this API endpoint. It will receive the endpoint payload with only a `slackform_meta_data` property (see [Configuring An Endpoint](Configuring-An-Endpoint.md)) and should verify the request and delete the record accordingly. DELETE requests have the Id of the record that should be deleted in the `data_id` property of the `slackform_meta_data` dictionary.
+DELETE requests to your API should be treated as requests to delete an existing record in the database. Your form should have it's `Endpoint` field set to this API endpoint. It will receive the endpoint payload with only a `slackform_meta_data` property (see [Configuring An Endpoint](Configuring-An-Endpoint.md)) and should verify the request and delete the record accordingly. DELETE requests have the Id of the record that should be deleted in the `data_id` property of the `slackform_meta_data` dictionary.
 
 #### Example
 
@@ -161,17 +164,18 @@ from myapp.models import Ticket
 class TicketAPI(View):
     def post(self, request):
         # process the request data
-        data = request.POST.copy()
-        meta = json.loads(data.pop("slackform_meta_data"))
+        request_data = request.POST
+        meta_data = request_data.get("slackform_meta_data")
+        meta = json.loads(meta_data)
         token = meta["token"]
         id = meta["data_id"]
 
         # authenticate the request
-        if token != settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN:
+        if token != ENDPOINT_TOKEN:
             return HttpResponse("Invalid auth token.", status=403)
 
         # handle the API logic
-        t = Test.objects.get(pk=data_id)
+        t = Test.objects.get(pk=id)
         t.delete()
 
         return HttpResponse(status=200)

@@ -66,11 +66,11 @@ Then you'll need a form which creates the dropdown menu with these senators. In 
 }
 ```
 
-Now when your form is called in Slack, there will be a dropdown menu with all 100 senators. If a user picks `Sherrod Brown (D - OH)` and submits the form, the Webhook will receive the following POST request:
+Now when your form is called in Slack, there will be a dropdown menu with all 100 senators. If a user picks `Sherrod Brown (D - OH)` and submits the form, the Endpoint will receive the following POST request:
 
 ```javascript
 {
-  "slackform_meta_data": " ... ",
+  "slackform_meta_data": "{ ... }",
   "senator": "brown-sherrod"
 }
 ```
@@ -81,4 +81,4 @@ Note that only the value is provided, not the original label.
 
 If your form has something to do with your Slack team, you can also take advantage of Slack's built-in external data sources. Rather than provide a URL as a `source` you can use one of the following strings: `users`, `channels`, `conversations`. To learn more about these dynamic sources you can check out the [official Slack docs](https://api.slack.com/dialogs#dynamic_select_elements).
 
-You can also use Slack's external data source if you care to by providing the value of `external` as your property's `source`. Since one of this app's functions is meant to provide a better alternative to Slack's built in external source system  mention, I only bring it up to say that it's supported and point you to the [official docs](https://api.slack.com/dialogs#dynamic_select_elements) for more.
+You can also use Slack's external data source system if you care to by providing the value of `external` as your property's `source`. Since one of this app's functions is meant to provide a better alternative to Slack's built in external source system  mention, I only bring it up to say that it's supported and point you to the [official docs](https://api.slack.com/dialogs#dynamic_select_elements) for more.

@@ -1,4 +1,5 @@
 import re
+import uuid
 from .models import Form, Endpoint
 from django.contrib import admin
 from django import forms
@@ -130,8 +131,19 @@ class FormAdmin(admin.ModelAdmin):
 admin.site.register(Form, FormAdmin)
 
 
+def regenerate_token(modeladmin, request, queryset):
+    for endpoint in queryset:
+        endpoint.token = uuid.uuid4().hex[:30]
+        endpoint.save()
+
+
+regenerate_token.short_description = 'Regenerate endpoint token'
+
+
 class EndpointAdmin(admin.ModelAdmin):
     list_display = ("name", "url", "token")
+    readonly_fields = ('token',)
+    actions = (regenerate_token,)
 
 
 admin.site.register(Endpoint, EndpointAdmin)

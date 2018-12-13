@@ -4,11 +4,11 @@ In order to get `django-slack-forms` working, you'll need to have a custom app i
 
 1. Go to the [Slack App Dashboard](https://api.slack.com/apps) and make a new App.
 
-2. Under `Interactive Components`, paste the `SLACKFORMS_ROOT_URL` from your settings in `Request URL`.
+2. Under `Interactive Components`, set the `Request URL` to the location of the root of `django-slack-forms` in your Django app (if you're not sure about the URL, you can come back to this step after you install the app in the next section).
 
 3. Under `Bot Users`, click `Add a Bot User`. Give it a name and username.
 
-4. Create a new slash command by going to `Slash Commands`. Give the command a name and set the `Request URL` to the location of the root of `django-slack-forms` in your Django app (if you're not sure about the URL, you can come back to this step after you install the app in the next section).
+4. Create a new slash command by going to `Slash Commands`. Give the command a name and set the `Request URL` to the same as the one in `Interactive Components`.
 
 5. Re-install the app by going to `Outh & Permissions` and clicking `Reinstall App`.
 

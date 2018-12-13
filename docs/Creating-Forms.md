@@ -2,7 +2,7 @@
 
 Django Slack Forms uses a JSON and UI schema combination derived from the [JSONSchema](https://json-schema.org/understanding-json-schema/index.html) standard and [`react-jsonschema-form`](https://github.com/mozilla-services/react-jsonschema-form).
 
-The JSON schema shapes what your data looks like. Is it a string or an integer? Does it have a maximum value or character length? Should it be one of a list of values? These are all questions that can be answered in your JSON Schema.
+The JSON schema shapes what your data looks like. Is the property a string or an integer? Does it have a maximum value or character length? Should it be one of a list of values? These are all questions that can be answered in your JSON Schema.
 
 Alternatively, The UI Schema determines what the form looks like on Slack and is tied much more closely to the Slack API's options. Is that input a single row input or a larger text area? Does the input have a placeholder or default value? Is there any help text provided? These kinds of questions are answered in your UI Schema.
 
@@ -11,16 +11,16 @@ Alternatively, The UI Schema determines what the form looks like on Slack and is
 To make a new form, go to your Django admin and make a new `Form` under `Slackforms`. You'll need to fill out the following properties:
 
 - `Name`: A unique name for your form.
-- `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](Slack-App.md).
 - `Json schema`: See [JSON Schema](#json-schema).
 - `Ui schema`: See [UI Schema](#ui-schema).
 
-These properties are optional and will be covered in subsequent sections:
-- `Webhook`: See [Configuring An Endpoint](Configuring-An-Endpoint.md).
+These properties are optional and will shape the behavior of your data:
+- `Slash command`: The name of the slash command that should trigger this form. See [Setting Up Your Slack App: Step #4](Slack-App.md).
+- `Endpoint`: See [Configuring An Endpoint](Configuring-An-Endpoint.md).
 - `Data source:`: See [Configuring An API](Configuring-An-API.md).
 
 ### JSON Schema
-This input is for mapping out what your data looks like. All official [JSON Schema](https://json-schema.org/understanding-json-schema/index.html) properties are included plus the following two custom properties:
+This input is for mapping out what your data looks like. All official [JSON Schema](https://json-schema.org/understanding-json-schema/index.html) properties are included* plus the following two custom properties:
 
 - `enumNames`: An array of display names for the values provided in the object's `enum` property. See [here](https://github.com/mozilla-services/react-jsonschema-form#custom-labels-for-enum-fields) for more on the idea behind it.
 - `source`: An alternative way of providing acceptable values. [See Configuring Source Data](Configuring-Source-Data.md) for more.
@@ -28,6 +28,8 @@ This input is for mapping out what your data looks like. All official [JSON Sche
 An added limitation imposed by Slack is a five-input limit. If you try to create a form with more than five properties, you will receive an error in the admin.
 
 Because this standard is created and maintained by others, I recommend using the links provided above for more comprehensive help on creating JSON schemas.
+
+<em>\*Note that while all JSON Schema properties are theoretically available only some have been substantially tested. If you run into an issue with one of them, please submit a ticket.</em>
 
 #### Example
 
@@ -71,10 +73,10 @@ To get started, check out this simple example which defines five properties (two
 ```
 
 ### UI Schema
-This app takes inspiration from `react-jsonschema-form` but instead of rendering components, it renders an object that can be interpreted by Slack. It's formed by creating a dictionary with keys that match those in your JSON Schemas `properties`. Those dictionaries can then take the following options which help define what it's form input looks like. All of those properties have default values so none of them are required.
+This app takes inspiration from `react-jsonschema-form` but instead of rendering components, it renders an object that can be interpreted by Slack. It's formed by creating a dictionary with keys that match those in your JSON Schemas `properties`. Those dictionaries can then take the following options which help define what its form input looks like. All of those properties have default values so none of them are required. In fact, a UI schema isn't required either. `django-slack-forms` will create a default form given the default values.
 
 
-For those familiar with Slack's form schema, I've provided the corresponding Slack property each of these is mapped to.
+<em>For those familiar with Slack's form schema, I've provided the corresponding Slack property each of these is mapped to.</em>
 
 | Property        | Description            | Required | Default  | Example     | Slack Prop               |
 | --------------- | ---------------------- | -------- | -------- | ----------- | ------------------------ |
@@ -86,7 +88,7 @@ For those familiar with Slack's form schema, I've provided the corresponding Sla
 
 The available widgets are: `text`, `textarea`, `select`, `email`\*, `number`\*, `tel`\*, and `url`\*. They must be spelled in all-lowercase. Also note that the `*` widgets are specialized text fields which control the keyboard on mobile devices. These subtypes don't come with any built in validation. For more on text subtypes, check out [the Slack docs](https://api.slack.com/dialogs#text_elements).
 
-### The `submit` Key
+#### The `submit` Key
 
 The UI Schema can also take a special key called `submit`, which shouldn't match with any of the properties in your JSON Schema. It must be a dictionary which only takes a single key (`ui:value`) which allows you to customize the text of the submit button on Slack. This too is optional and will default to `Submit` if no value is provided.
 

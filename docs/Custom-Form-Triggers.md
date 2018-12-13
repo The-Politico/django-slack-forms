@@ -2,12 +2,12 @@
 
 *Note: This is an advanced section. It's expected that you have an understanding of the app outlined in the basic sections of these docs before reading this page.*
 
-The introduction docs assumed that new form's would be triggered through slash commands, but that's only one way to trigger forms in `django-slack-forms`. The five ways to trigger a form are:
+The introduction docs assumed that new forms would be triggered through slash commands, but that's only one way to trigger forms in `django-slack-forms`. The five ways to trigger a form are:
   - [Slash Commands](https://api.slack.com/slash-commands)
   - [Message Buttons](https://api.slack.com/docs/message-buttons)
   - [Message Menus](https://api.slack.com/docs/message-menus)
   - [Message Actions](https://api.slack.com/actions)
-  - Manually via webhook*
+  - Manually via endpoint*
 
 <em>\*Manual form triggers must be the result of a user action on Slack (i.e. one of the other four types of triggers). See [The Slack trigger_id](#the-slack-trigger_id) for more.</em>
 
@@ -29,18 +29,15 @@ However in order to start with data from your API, `django-slack-forms` needs an
 For help setting up slash commands see [Setting Up Your Slack App](Slack-App.md) step #4.
 
 ### Message Actions
-In order to enable actions, you need to set a `Request URL` for your Slack App's actions. Go to `Interactive Components` in the [Slack API Dashboard](https://api.slack.com/apps/) and set the `Request URL` to the location of the root of `django-slack-forms` in your Django app.
-
 Create a new message action by going to `Interactive Components` in the [Slack API Dashboard](https://api.slack.com/apps/) for your app. Click `Create New Action`. Give the action a name and set the `Callback ID` to the unique `name` of the form you want to trigger.
 
 If you don't see the action appear in your message's context menu, try reinstalling the Slack app by going to `Outh & Permissions` and clicking `Reinstall App`.
 
 ### Message Buttons & Message Menus
-In order to enable buttons and menus, you need to set a `Request URL` for your Slack App's actions. Go to `Interactive Components` in the [Slack API Dashboard](https://api.slack.com/apps/) and set the `Request URL` to the location of the root of `django-slack-forms` in your Django app.
+Using the tokens of the same Slack App as `django-slack-forms`, you can create messages using the `chat.postMessage` method. Check out the [Slack API GitHub page](https://github.com/slackapi) for more on using the API to post messages.
 
-Then, using the same Slack App's tokens, you can create messages using the `chat.postMessage` method.
-
-For help creating a Slack button see [the official docs](https://api.slack.com/docs/message-buttons). For the value of the button or option, stringify a dictionary (such as with `json.dumps()`) which contains the following properties:
+For help creating a Slack button see [the official docs](https://api.slack.com/docs/message-buttons).
+The value of the button or option must be a stringified dictionary (such as with `json.dumps()`) which contains the following properties:
 
 | Property    | Description                                               | Required           |
 | ------------| ----------------------                                    | ------------------ |
@@ -59,7 +56,7 @@ Manual triggers exist in `django-slack-forms` as a catch-all system for custom b
 ### The Slack `trigger_id`
 First, a quick word about the `trigger_id`.
 
-In order to know which user to serve a form to, Slack requires a special ID known as a `trigger_id` which the API provides as the result of certain user actions (e.g. slash commands, button clicks, etc.). `django-slack-forms` handles passing this `trigger_id` along from it's list of available form triggers, but in order to manually trigger one you'll need to get one and pass it through the request.
+In order to know which user to serve a form to, Slack requires a special ID known as a `trigger_id` which the API provides as the result of certain user actions (e.g. slash commands, button clicks, etc.). `django-slack-forms` handles passing this `trigger_id` along from its list of available form triggers, but in order to manually trigger one you'll need to acquire one and pass it through the request.
 
 For more on `trigger_id`s and where to get them, check out the [official docs](https://api.slack.com/docs/triggers).
 
@@ -68,12 +65,12 @@ The first way to manually trigger a form is to send a POST request to the root o
 
 | Property     | Description                                                      | Required |
 | -------------| ---------------------------------------------------------------- | -------- |
-| `type`       | Must be set to `manual`.                                         | Yes      |
-| `form`       | The unique `name` of the form to trigger.                        | Yes      |
-| `token`      | The Slack verification token found in your Slack App Dashboard.  | Yes      |
-| `trigger_id` | The `trigger_id` created by a user action in Slack.              | Yes      |
-| `data`       | A dictionary with overriding data values.                        | No       |
-| `data_id`    | The Id of the data to be retrieved form the form's `data_source`.| No       |
+| `type`       | Must be set to `manual`                                          | Yes      |
+| `form`       | The unique `name` of the form to trigger                         | Yes      |
+| `token`      | The endpoint token registered to this app                        | Yes      |
+| `trigger_id` | The `trigger_id` created by a user action in Slack               | Yes      |
+| `data`       | A dictionary with overriding data values                         | No       |
+| `data_id`    | The Id of the data to be retrieved form the form's `data_source` | No       |
 
 In the end, the payload should look like this with those options inside:
 
@@ -84,13 +81,13 @@ In the end, the payload should look like this with those options inside:
 ```
 
 ### Trigger Via Python
-If `django-slack-forms` is installed in the app you're trying to trigger the form from you have access to its `Form` model. You can trigger a form with a `Form` object's `trigger` function and passing the `trigger_id` as the first argument as well as optionally some kwargs:
+If `django-slack-forms` is installed in the app you're trying to trigger the form from, you have access to its `Form` model. You can trigger a form with a `Form` object's `trigger` function and pass the `trigger_id` as the first argument as well as optionally some kwargs:
 
 | Property     | Description                                                    | Default  |
 | ----------| ----------------------------------------------------------------- | -------- |
-| `method`  | `POST` to trigger a new form or `PUT` to trigger an edit.         | `"POST"` |
-| `data`    | A dictionary with overriding data values.                         | `{}`     |
-| `data_id` | The Id of the data to be retrieved form the form's `data_source`. | `""`     |
+| `method`  | `POST` to trigger a new form or `PUT` to trigger an edit          | `"POST"` |
+| `data`    | A dictionary with overriding data values                          | `{}`     |
+| `data_id` | The Id of the data to be retrieved form the form's `data_source`  | `""`     |
 
 It would look something like this:
 
@@ -98,7 +95,7 @@ It would look something like this:
 from slackforms.models import Form
 
 f = Form.objects.get(name="NAME_OF_FORM")
-f.post_to_slack(
+f.trigger(
   "TRIGGER_ID",
   method="POST",
   data_id="12345",
@@ -107,4 +104,4 @@ f.post_to_slack(
 ```
 
 ### One Final Note About Overriding Data
-Both methods of manual form come with a way to supply `data` and `data_id` arguments. If both are provided the two data sources will be merged. Data properties provided explicitly through the `data` argument will override source data retrieved from the `data_source` endpoint designated with `data_id` if that particular property exists in both.
+Both methods of manual form triggers come with a way to supply `data` and `data_id` arguments. If both are provided the two data sources will be merged. Data properties provided explicitly through the `data` argument will override source data retrieved from the `data_source` endpoint designated with `data_id` if that particular property exists in both.

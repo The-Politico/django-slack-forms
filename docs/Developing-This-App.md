@@ -45,7 +45,7 @@
 
 ## Routes Available In Development App
 - `/`: The root of Slack Forms. Used as the URL provided to Slack as the `request_url` and the URL for every slash command.
-- `/callback/`: The callback route for Slack Forms. Used as a `response_url` for POST requests sent to webhooks in order to provide feedback.
+- `/callback/`: The callback route for Slack Forms. Used as a `response_url` for POST requests sent to endpoints in order to provide feedback.
 - `/admin/`: The Django admin.
 - `/api/test/`: A test API endpoint for GET, POST, and PUT requests used in the example form found in the `fixtures.json`.
 - `/api/options/`: A test set of options for a field used in the example form found in the `fixtures.json`.

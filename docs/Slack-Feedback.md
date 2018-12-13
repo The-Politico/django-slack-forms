@@ -2,18 +2,18 @@
 
 *Note: This is an advanced section. It's expected that you have an understanding of the app outlined in the basic sections of these docs before reading this page.*
 
-Once your webhook receives data and processes it accordingly, you may want to post a message in Slack to confirm it's success or indicate it's failure.
+Once your endpoint receives data and processes it accordingly, you may want to post a message in Slack to confirm it's success or indicate it's failure.
 
-`django-slack-forms` handles posting messages like it does most things: through webhooks. It includes two different endpoints located at `/callback/` and `/message/` (relative to the root of the app) which offer variable levels of flexibility and therefore complexity.
+`django-slack-forms` handles posting messages like it does most things: through endpoints. It includes two different endpoints located at `/callback/` and `/message/` (relative to the root of the app) which offer variable levels of flexibility and therefore complexity.
 
 ## Posting Callback Messages (`/callback/`)
-In the meta data for the request payload sent to your webhook is a URL under the key of `response_url`. You can send it a POST request to post a message in Slack. The meta data also comes with information about the channel the form was filled out in and the user who filled it out. This can be useful for creating a rich feedback message.
+In the meta data for the request payload sent to your endpoint is a URL under the key of `response_url`. You can send it a POST request to post a message in Slack. The metadata also comes with information about the channel the form was filled out in and the user who filled it out. This can be useful for creating a rich feedback message.
 
 The POST request for this endpoint should include the following properties:
 
 | Property      | Description                                          | Required                     |
 | ------------- | ---------------------------------------------------- | ---------------------------- |
-| `token`       | The Slack verification token of your app             | Yes                          |
+| `token`       | The endpoint token registered to this app            | Yes                          |
 | `channel`     | The channel to post the message in (ID or name)      | Yes                          |
 | `text`        | The main text of the message                         | No                           |
 | `attachments` | A list of [Slack attachments](https://api.slack.com/docs/message-attachments) to include                        | No                           |
@@ -29,7 +29,7 @@ The POST request for this endpoint should include the following properties:
 
 Consider the Django application that handles support tickets created in [Integrating A REST API](Integrating-An-API.md). When a new instance has been saved, a message should appear in Slack with the ability to edit and delete it.
 
-For a quick refresher take a look at the metadata sent to this webhook (remember this is a stringified dictionary found in the request data's `slackform_meta_data` key.). Some of this might be useful for creating a rich feedback message.
+For a quick refresher take a look at the metadata sent to this endpoint (remember this is a stringified dictionary found in the request data's `slackform_meta_data` key.). Some of this might be useful for creating a rich feedback message.
 
 ```javascript
 {
@@ -80,7 +80,7 @@ class TicketAPI(View):
 
         # create feedback message
         callback_data = {
-            "token": settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN,
+            "token": ENDPOINT_TOKEN,
             "channel": channel,
             "data_id": t.pk,
             "form": form_name,
@@ -99,7 +99,7 @@ class TicketAPI(View):
 
 This endpoint is the most flexible and once verified will simply post a message. For more on creating messages you can check out [the official Slack docs](https://api.slack.com/docs/messages) and use their [message builder utility](https://api.slack.com/docs/messages/builder).
 
-The message data must be a stringified dictionary that is sent through with the POST request under the key of `payload`. You must also send the Slack verification token for you app. That request should look like this:
+The message data must be a stringified dictionary that is sent through with the POST request under the key of `payload`. You must also send the Slack verification token for you app or a registered endpoint token. That request should look like this:
 
 ```javascript
 {
