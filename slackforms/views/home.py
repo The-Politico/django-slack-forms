@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views import View
 
 from ..conf import settings
-from ..models import Endpoint
+from ..models import Token
 
 from ..handlers import (
     FormHandler,
@@ -50,7 +50,7 @@ class Home(View):
 
         token = data.get("token")
         if token != settings.SLACK_VERIFICATION_TOKEN:
-            if token not in [end.token for end in Endpoint.objects.all()]:
+            if token not in [tok.token for tok in Token.objects.all()]:
                 return HttpResponse("Invalid Verification Token.", status=403)
 
         type = data.get("type", "")

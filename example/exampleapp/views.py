@@ -20,7 +20,7 @@ class TestManual(View):
         payload = {
             "type": "manual",
             "form": "Test",
-            "token": "81a0af463f1442f6a8bb3bc4758dad",
+            "token": "4c001abee28a4bc18581abfb210f05",
             "trigger_id": data.get("trigger_id"),
             "method": "PUT",
             # "data_id": "17",

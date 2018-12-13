@@ -13,7 +13,7 @@ The POST request for this endpoint should include the following properties:
 
 | Property      | Description                                          | Required                     |
 | ------------- | ---------------------------------------------------- | ---------------------------- |
-| `token`       | The endpoint token registered to this app            | Yes                          |
+| `token`       | The token registered in the Django admin             | Yes                          |
 | `channel`     | The channel to post the message in (ID or name)      | Yes                          |
 | `text`        | The main text of the message                         | No                           |
 | `attachments` | A list of [Slack attachments](https://api.slack.com/docs/message-attachments) to include                        | No                           |
@@ -99,7 +99,7 @@ class TicketAPI(View):
 
 This endpoint is the most flexible and once verified will simply post a message. For more on creating messages you can check out [the official Slack docs](https://api.slack.com/docs/messages) and use their [message builder utility](https://api.slack.com/docs/messages/builder).
 
-The message data must be a stringified dictionary that is sent through with the POST request under the key of `payload`. You must also send the Slack verification token for you app or a registered endpoint token. That request should look like this:
+The message data must be a stringified dictionary that is sent through with the POST request under the key of `payload`. You must also send the Slack verification token for your app or a registered token. That request should look like this:
 
 ```javascript
 {

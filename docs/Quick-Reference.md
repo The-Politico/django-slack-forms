@@ -110,7 +110,7 @@ In order to allow for `slackform_meta_data` to be a multi-layer dictionary, it w
 ```JavaScript
 {
   "slackform_meta_data": {
-    "token": "3829AGBWI1923H2N194" // The token registered to this endpoint
+    "token": "3829AGBWI1923H2N194" // The token registered to this form
     "data_id": null
 
     ...
@@ -141,7 +141,7 @@ After a form for a new record is submitted, validated, and processed the form da
 ```javascript
 {
   "slackform_meta_data": { // this dictionary will be a serialized string
-    "token": "3829AGBWI1923H2N194" // The token registered to this endpoint
+    "token": "3829AGBWI1923H2N194" // The token registered to this form
     "data_id": null,
     "team": { // the team the form was finished in
       "id": "TEMGAT2Z",
@@ -173,7 +173,7 @@ After a form for an existing record is submitted, validated, and processed the f
 ```javascript
 {
   "slackform_meta_data": { // this dictionary will be a serialized string
-    "token": "3829AGBWI1923H2N194" // The token registered to this endpoint
+    "token": "3829AGBWI1923H2N194" // The token registered to this form
     "data_id": "321231", // The ID of the record being updated
     "team": { // the team the form was finished in
       "id": "TEMGAT2Z",
@@ -205,7 +205,7 @@ If a form delete button is clicked in a feedback message, metadata will be sent 
 ```javascript
 {
   "slackform_meta_data": { // this dictionary will be a serialized string
-    "token": "3829AGBWI1923H2N194" // The token registered to this endpoint
+    "token": "3829AGBWI1923H2N194" // The token registered to this form
     "data_id": "321231", // The ID of the record to be deleted
     "team": { // the team the button was clicked in
       "id": "TEMGAT2Z",

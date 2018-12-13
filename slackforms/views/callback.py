@@ -2,7 +2,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from ..models import Endpoint
+from ..models import Token
 from ..conf import settings
 from ..utils import slack
 
@@ -31,7 +31,7 @@ class Callback(View):
         # authenticate the request
         token = data.get("token")
         if token is not None and token != settings.SLACK_VERIFICATION_TOKEN:
-            if token not in [end.token for end in Endpoint.objects.all()]:
+            if token not in [tok.token for tok in Token.objects.all()]:
                 return HttpResponse("Invalid Verification Token.", status=403)
 
         # validate the request data

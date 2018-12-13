@@ -3,16 +3,13 @@ import uuid
 from django.db import models
 
 
-class Endpoint(models.Model):
+class Token(models.Model):
     """
-    A registered endpoint with valid tokens.
+    A registered token for endpoint validation.
     """
 
     name = models.SlugField(
-        max_length=100, unique=True, help_text="The name of your endpoint."
-    )
-    url = models.URLField(
-        help_text="A URL to hit with the processed and validated form data."
+        max_length=100, unique=True, help_text="The name of your token."
     )
     token = models.SlugField(max_length=30, unique=True, editable=False)
 

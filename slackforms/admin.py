@@ -1,6 +1,6 @@
 import re
 import uuid
-from .models import Form, Endpoint
+from .models import Form, Token
 from django.contrib import admin
 from django import forms
 from slackforms.utils.schema_to_form import (
@@ -110,6 +110,7 @@ class FormForm(forms.ModelForm):
             "name",
             "json_schema",
             "ui_schema",
+            "token",
             "endpoint",
             "data_source",
             "slash_command",
@@ -121,10 +122,7 @@ class FormAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "json_schema",
-        "ui_schema",
         "endpoint",
-        "data_source",
-        "slash_command",
     )
 
 
@@ -132,18 +130,18 @@ admin.site.register(Form, FormAdmin)
 
 
 def regenerate_token(modeladmin, request, queryset):
-    for endpoint in queryset:
-        endpoint.token = uuid.uuid4().hex[:30]
-        endpoint.save()
+    for token in queryset:
+        token.token = uuid.uuid4().hex[:30]
+        token.save()
 
 
 regenerate_token.short_description = 'Regenerate endpoint token'
 
 
-class EndpointAdmin(admin.ModelAdmin):
-    list_display = ("name", "url", "token")
+class TokenAdmin(admin.ModelAdmin):
+    list_display = ("name", "token")
     readonly_fields = ('token',)
     actions = (regenerate_token,)
 
 
-admin.site.register(Endpoint, EndpointAdmin)
+admin.site.register(Token, TokenAdmin)

@@ -10,7 +10,7 @@ from django.conf import settings
 
 CHANNEL = "general"
 
-ENDPOINT_TOKEN = "81a0af463f1442f6a8bb3bc4758dad"
+ENDPOINT_TOKEN = "4c001abee28a4bc18581abfb210f05"
 
 
 class API(View):

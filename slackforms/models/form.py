@@ -25,12 +25,18 @@ class Form(models.Model):
         help_text="The unique name of this form to serve as a unique key.",
     )
 
-    endpoint = models.ForeignKey(
-        "slackforms.Endpoint",
-        on_delete=models.PROTECT,
+    endpoint = models.URLField(
         null=True,
         blank=True,
         help_text="A URL to hit with the processed and validated form data.",
+    )
+
+    token = models.ForeignKey(
+        "slackforms.Token",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="A token to send with the endpoint.",
     )
 
     json_schema = JSONField(
@@ -195,12 +201,12 @@ this template. Use "{id}" to crate the template.
         meta_data = meta
         meta_data["response_url"] = self.get_resonse_url()
         meta_data["form"] = self.name
-        meta_data["token"] = self.endpoint.token
+        meta_data["token"] = self.token.token if self.token is not None else None
         data["slackform_meta_data"] = json.dumps(meta_data)
 
         if method == "PUT":
-            return requests.put(url=self.endpoint.url, data=data)
+            return requests.put(url=self.endpoint, data=data)
         elif method == "DELETE":
-            return requests.delete(url=self.endpoint.url, data=data)
+            return requests.delete(url=self.endpoint, data=data)
         else:
-            return requests.post(url=self.endpoint.url, data=data)
+            return requests.post(url=self.endpoint, data=data)

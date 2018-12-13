@@ -67,7 +67,7 @@ The first way to manually trigger a form is to send a POST request to the root o
 | -------------| ---------------------------------------------------------------- | -------- |
 | `type`       | Must be set to `manual`                                          | Yes      |
 | `form`       | The unique `name` of the form to trigger                         | Yes      |
-| `token`      | The endpoint token registered to this app                        | Yes      |
+| `token`      | The token registered in the Django admin                         | Yes      |
 | `trigger_id` | The `trigger_id` created by a user action in Slack               | Yes      |
 | `data`       | A dictionary with overriding data values                         | No       |
 | `data_id`    | The Id of the data to be retrieved form the form's `data_source` | No       |
