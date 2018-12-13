@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views import View
 
 
-class TestOptions(View):
+class Options(View):
     def get(self, request):
         data = [
             {"label": "News Apps Editor", "value": "apps-editor"},

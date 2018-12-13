@@ -1,5 +1,5 @@
 import re
-from .models import Form
+from .models import Form, Endpoint
 from django.contrib import admin
 from django import forms
 from slackforms.utils.schema_to_form import (
@@ -106,7 +106,7 @@ class FormForm(forms.ModelForm):
             "name",
             "json_schema",
             "ui_schema",
-            "webhook",
+            "endpoint",
             "data_source",
             "slash_command",
         ]
@@ -118,10 +118,17 @@ class FormAdmin(admin.ModelAdmin):
         "name",
         "json_schema",
         "ui_schema",
-        "webhook",
+        "endpoint",
         "data_source",
         "slash_command",
     )
 
 
 admin.site.register(Form, FormAdmin)
+
+
+class EndpointAdmin(admin.ModelAdmin):
+    list_display = ("name", "url", "token")
+
+
+admin.site.register(Endpoint, EndpointAdmin)

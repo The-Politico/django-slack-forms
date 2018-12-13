@@ -2,6 +2,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.views import View
+from ..models import Endpoint
 from ..conf import settings
 from ..utils import slack
 
@@ -18,17 +19,20 @@ class Callback(View):
 
     def post(self, request, format=None):
         # process the request data
-        token = request.POST.get("token", None)
-        data_id = request.POST.get("data_id", None)
-        channel = request.POST.get("channel", None)
-        form = request.POST.get("form", None)
-        new = request.POST.get("new", None)
-        edit = request.POST.get("edit", None)
-        delete = request.POST.get("delete", None)
+        data = request.POST
+        token = data.get("token", None)
+        data_id = data.get("data_id", None)
+        channel = data.get("channel", None)
+        form = data.get("form", None)
+        new = data.get("new", None)
+        edit = data.get("edit", None)
+        delete = data.get("delete", None)
 
         # authenticate the request
-        if token != settings.SLACK_VERIFICATION_TOKEN:
-            return HttpResponse("Invalid Verification Token.", status=403)
+        token = data.get("token")
+        if token is not None and token != settings.SLACK_VERIFICATION_TOKEN:
+            if token not in [end.token for end in Endpoint.objects.all()]:
+                return HttpResponse("Invalid Verification Token.", status=403)
 
         # validate the request data
         # required fields

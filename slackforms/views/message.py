@@ -2,6 +2,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.views import View
+from ..models import Endpoint
 from ..conf import settings
 from ..utils import slack
 
@@ -19,8 +20,10 @@ class Message(View):
     def post(self, request, format=None):
         data = request.POST
 
-        if data.get("token") != settings.SLACK_VERIFICATION_TOKEN:
-            return HttpResponse("Invalid Verification Token.", status=403)
+        token = data.get("token")
+        if token != settings.SLACK_VERIFICATION_TOKEN:
+            if token not in [end.token for end in Endpoint.objects.all()]:
+                return HttpResponse("Invalid Verification Token.", status=403)
 
         message_data = json.loads(data.get("payload", ""))
         resp = slack("chat.postMessage", **message_data)

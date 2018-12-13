@@ -10,6 +10,8 @@ from django.conf import settings
 
 CHANNEL = "general"
 
+ENDPOINT_TOKEN = "81a0af463f1442f6a8bb3bc4758dad"
+
 
 class API(View):
     def get(self, request):
@@ -35,7 +37,7 @@ class API(View):
         token = meta["token"]
 
         # authenticate the request
-        if token != settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN:
+        if token != ENDPOINT_TOKEN:
             return HttpResponse("Invalid auth token.", status=403)
 
         # handle the API logic
@@ -58,7 +60,7 @@ class API(View):
 
         # create feedback message
         callback_data = {
-            "token": settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN,
+            "token": ENDPOINT_TOKEN,
             "channel": CHANNEL,
             "form": form_name,
             "text": "`{}` edited `{}` entry: {}(`{}`)".format(
@@ -80,7 +82,7 @@ class API(View):
         token = meta["token"]
 
         # authenticate the request
-        if token != settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN:
+        if token != ENDPOINT_TOKEN:
             return HttpResponse("Invalid auth token.", status=403)
 
         # handle the API logic
@@ -103,7 +105,7 @@ class API(View):
 
         # create feedback message
         callback_data = {
-            "token": settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN,
+            "token": ENDPOINT_TOKEN,
             "channel": CHANNEL,
             "data_id": t.pk,
             "form": form_name,
@@ -130,7 +132,7 @@ class API(View):
         token = meta["token"]
 
         # authenticate the request
-        if token != settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN:
+        if token != ENDPOINT_TOKEN:
             return HttpResponse("Invalid auth token.", status=403)
 
         # handle the API logic
@@ -140,7 +142,7 @@ class API(View):
 
         # create feedback message
         callback_data = {
-            "token": settings.SLACKFORMS_SLACK_VERIFICATION_TOKEN,
+            "token": ENDPOINT_TOKEN,
             "channel": CHANNEL,
             "form": form_name,
             "text": "`{}` deleted `{}` entry: {}(`{}`)".format(

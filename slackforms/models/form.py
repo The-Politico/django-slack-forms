@@ -24,8 +24,11 @@ class Form(models.Model):
         unique=True,
         help_text="The unique name of this form to serve as a unique key.",
     )
-    webhook = models.URLField(
-        blank=True,
+
+    endpoint = models.ForeignKey(
+        "slackforms.Endpoint",
+        on_delete=models.PROTECT,
+        null=True,
         help_text="A URL to hit with the processed and validated form data.",
     )
 
@@ -186,12 +189,12 @@ this template. Use "{id}" to crate the template.
         meta_data = meta
         meta_data["response_url"] = self.get_resonse_url()
         meta_data["form"] = self.name
-        meta_data["token"] = Settings.SLACK_VERIFICATION_TOKEN
+        meta_data["token"] = self.endpoint.token
         data["slackform_meta_data"] = json.dumps(meta_data)
 
         if method == "PUT":
-            requests.put(url=self.webhook, data=data)
+            requests.put(url=self.endpoint.url, data=data)
         elif method == "DELETE":
-            requests.delete(url=self.webhook, data=data)
+            requests.delete(url=self.endpoint.url, data=data)
         else:
-            requests.post(url=self.webhook, data=data)
+            requests.post(url=self.endpoint.url, data=data)

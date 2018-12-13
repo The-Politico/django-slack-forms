@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Test",
-      "webhook": "http://127.0.0.1:8000/api/test/",
+      "endpoint": null,
       "json_schema": {
         "type": "object",
         "title": "Name of Your Form",
