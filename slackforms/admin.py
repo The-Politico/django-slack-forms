@@ -59,7 +59,10 @@ class FormForm(forms.ModelForm):
         return None if len(errors) == 0 else errors
 
     def validate_ui_schema(self):
-        schema = self.cleaned_data.get("ui_schema", {})
+        schema = self.cleaned_data.get("ui_schema", None)
+        if schema is None:
+            return None
+
         json_schema = self.cleaned_data.get("json_schema", {})
 
         errors = []

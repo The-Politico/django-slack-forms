@@ -20,10 +20,10 @@ class TestManual(View):
         payload = {
             "type": "manual",
             "form": "Test",
-            "token": settings.SLACK_VERIFICATION_TOKEN,
+            "token": "81a0af463f1442f6a8bb3bc4758dad",
             "trigger_id": data.get("trigger_id"),
             "method": "PUT",
-            "data_id": "17",
+            # "data_id": "17",
             "data": {"name": "Andrew Briz Override"},
         }
 

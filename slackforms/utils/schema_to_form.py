@@ -21,10 +21,12 @@ Special Slack data sources for dynamic lists.
 SELECT_EXTERNAL_SOURCES = ["users", "channels", "external", "conversations"]
 
 
-def schema_to_form(name, json, ui, data={}):
+def schema_to_form(name, json, ui_schema, data={}):
     """
     Generate a Slack form dictionary from a schema and data.
     """
+    ui = ui_schema if ui_schema is not None else {}
+
     form = {
         # title --> title (or default)
         "title": json.get("title", DEFAULTS["title"]),

@@ -29,14 +29,17 @@ class Form(models.Model):
         "slackforms.Endpoint",
         on_delete=models.PROTECT,
         null=True,
+        blank=True,
         help_text="A URL to hit with the processed and validated form data.",
     )
 
     json_schema = JSONField(
-        null=True, help_text="A schema for the form data. See docs."
+        help_text="A schema for the form data. See docs."
     )
     ui_schema = JSONField(
-        null=True, help_text="A schema for the form inputs. See docs."
+        null=True,
+        blank=True,
+        help_text="A schema for the form inputs. See docs."
     )
     data_source = models.URLField(
         blank=True,
@@ -185,6 +188,9 @@ this template. Use "{id}" to crate the template.
         Send processed form data (along with some metadata) to the form's
         designated webhook.
         """
+        if self.endpoint is None:
+            return
+
         data = processed_content
         meta_data = meta
         meta_data["response_url"] = self.get_resonse_url()
@@ -193,8 +199,8 @@ this template. Use "{id}" to crate the template.
         data["slackform_meta_data"] = json.dumps(meta_data)
 
         if method == "PUT":
-            requests.put(url=self.endpoint.url, data=data)
+            return requests.put(url=self.endpoint.url, data=data)
         elif method == "DELETE":
-            requests.delete(url=self.endpoint.url, data=data)
+            return requests.delete(url=self.endpoint.url, data=data)
         else:
-            requests.post(url=self.endpoint.url, data=data)
+            return requests.post(url=self.endpoint.url, data=data)
