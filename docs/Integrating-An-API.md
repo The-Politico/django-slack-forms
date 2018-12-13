@@ -112,7 +112,7 @@ PUT requests to your API should be treated as requests to update an existing rec
 Consider a Django application that handles support tickets. A PUT request to the URL `https://example.com/api/ticket/` should update a particular ticket in the database.
 
 ```python
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from django.views import View
 from django.conf import settings
 
@@ -155,7 +155,7 @@ DELETE requests to your API should be treated as requests to delete an existing 
 Consider a Django application that handles support tickets. A DELETE request to the URL `https://example.com/api/ticket/` should delete a particular ticket in the database.
 
 ```python
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from django.views import View
 from django.conf import settings
 
