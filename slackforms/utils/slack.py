@@ -1,4 +1,4 @@
-from slackclient import SlackClient
+from slack import WebClient
 from slackforms.conf import settings
 
 
@@ -8,8 +8,8 @@ Slack API methods commonly handled by bots rather than apps.
 BOT_METHODS = ["chat.postMessage", "chat.postEphemeral"]
 
 
-slack_api = SlackClient(settings.SLACK_API_TOKEN)
-slack_bot = SlackClient(settings.SLACK_BOT_TOKEN)
+slack_api = WebClient(settings.SLACK_API_TOKEN)
+slack_bot = WebClient(settings.SLACK_BOT_TOKEN)
 
 
 def slack(method, *args, **kwargs):
